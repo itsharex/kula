@@ -277,4 +277,4 @@ Binary size: ~11 MB (static, CGO_ENABLED=0)
 
 [GNU Affero General Public License v3.0](LICENSE)
 
-The registered trademark Linux® is used pursuant to a sublicense from the Linux Foundation, the exclusive licensee of Linus Torvalds, owner of the mark on a world-wide basis.
+Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
