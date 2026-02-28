@@ -13,6 +13,7 @@ import (
 
 	"kula-szpiegula/internal/collector"
 	"kula-szpiegula/internal/config"
+	"kula-szpiegula/internal/sandbox"
 	"kula-szpiegula/internal/storage"
 	"kula-szpiegula/internal/tui"
 	"kula-szpiegula/internal/web"
@@ -80,7 +81,7 @@ func main() {
 
 	switch cmd {
 	case "serve":
-		runServe(cfg)
+		runServe(cfg, *configPath)
 	case "tui":
 		runTUI(cfg)
 	default:
@@ -89,7 +90,7 @@ func main() {
 	}
 }
 
-func runServe(cfg *config.Config) {
+func runServe(cfg *config.Config, configPath string) {
 	cfg.Web.Version = version
 	coll := collector.New()
 
@@ -98,6 +99,12 @@ func runServe(cfg *config.Config) {
 		log.Fatalf("Failed to initialize storage: %v", err)
 	}
 	defer func() { _ = store.Close() }()
+
+	// Enforce Landlock sandbox: restrict filesystem and network access
+	// to only what Kula needs. Non-fatal on unsupported kernels.
+	if err := sandbox.Enforce(configPath, cfg.Storage.Directory, cfg.Web.Port); err != nil {
+		log.Printf("Warning: Landlock sandbox not enforced: %v", err)
+	}
 
 	server := web.NewServer(cfg.Web, coll, store)
 
