@@ -373,8 +373,6 @@ Overall, Kula fills an important niche as a lightweight, self-contained monitori
 
 ---
 
-*Report Generated: 2025-03-01*
-
-*Reviewer: AI Code Review Analysis*
-
+*Report Generated: 2025-03-01* \
+*Reviewer: AI Code Review Analysis* \
 *Model: Claude 3.5 Sonnet*

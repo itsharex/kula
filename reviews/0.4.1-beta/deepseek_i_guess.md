@@ -6,9 +6,9 @@ Here is my comprehensive code review in markdown format.
 
 ## **Code Review: Kula - Lightweight Linux Server Monitoring Tool**
 
-**Reviewer:** Security Expert / Professional Code Reviewer
-**Date:** March 2, 2026
-**Project:** [https://github.com/c0m4r/kula](https://github.com/c0m4r/kula)
+**Reviewer:** Security Expert / Professional Code Reviewer \
+**Date:** March 2, 2026 \
+**Project:** [https://github.com/c0m4r/kula](https://github.com/c0m4r/kula) \
 **Commit Analyzed:** [ec13599](https://github.com/c0m4r/kula/commit/ec13599) (as of March 2, 2026)
 
 ### **1. Executive Summary**
@@ -104,7 +104,7 @@ The primary and most urgent finding is the authentication inconsistency. The rec
 
 Bonus:
 
-I asked: what model/version you are?
+I asked: what model/version you are? \
 Deepseek replied: I'm Claude 3.5 Sonnet, created by Anthropic.
 
 lmao
