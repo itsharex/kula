@@ -889,7 +889,7 @@
                 state.dataBuffer = [];
 
                 // Batch add all historical points WITHOUT chart.update() per sample
-                const processed = insertGapsInHistory(data);
+                const processed = insertGapsInHistory(data, response?.resolution);
                 processed.forEach(item => {
                     if (item._gap) {
                         addGapToCharts(new Date(item.ts));
@@ -950,7 +950,7 @@
                 state.dataBuffer = [];
 
                 if (Array.isArray(data) && data.length > 0) {
-                    const processed = insertGapsInHistory(data);
+                    const processed = insertGapsInHistory(data, response?.resolution);
                     processed.forEach(item => {
                         if (item._gap) {
                             addGapToCharts(new Date(item.ts));
@@ -1100,13 +1100,13 @@
     }
 
     // ---- Gap Insertion ----
-    function insertGapsInHistory(data) {
+    function insertGapsInHistory(data, resolutionStr = '1s') {
         if (state.joinMetrics || data.length < 2) return data;
 
-        // Estimate expected interval from first two points
-        const t0 = new Date(data[0].ts || data[0].data?.ts).getTime();
-        const t1 = new Date(data[1].ts || data[1].data?.ts).getTime();
-        const expectedInterval = Math.abs(t1 - t0) || 1000;
+        let expectedInterval = 1000; // default 1s
+        if (resolutionStr === '1m') expectedInterval = 60000;
+        else if (resolutionStr === '5m') expectedInterval = 300000;
+
         const gapThreshold = expectedInterval * 2.5;
 
         const result = [];
@@ -1125,11 +1125,10 @@
     }
 
     function addGapToCharts(ts) {
-        const nullPoint = { x: ts, y: null };
         Object.values(state.charts).forEach(chart => {
             if (!chart?.data?.datasets) return;
             chart.data.datasets.forEach(ds => {
-                if (Array.isArray(ds.data)) ds.data.push(nullPoint);
+                if (Array.isArray(ds.data)) ds.data.push({ x: ts, y: null });
             });
         });
     }
