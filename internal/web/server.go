@@ -242,6 +242,9 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 		"auth_enabled": s.cfg.Auth.Enabled,
 		"version":      s.cfg.Version,
 		"join_metrics": s.cfg.JoinMetrics,
+		"os":           s.cfg.OS,
+		"kernel":       s.cfg.Kernel,
+		"arch":         s.cfg.Arch,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(info); err != nil {

@@ -71,15 +71,21 @@ type Model struct {
 	height    int
 	interval  time.Duration
 	showCores bool // toggle per-core CPU with 'a'
+	os        string
+	kernel    string
+	arch      string
 }
 
-func NewModel(c *collector.Collector, interval time.Duration) Model {
+func NewModel(c *collector.Collector, interval time.Duration, osName, kernel, arch string) Model {
 	return Model{
 		collector: c,
 		interval:  interval,
 		width:     120,
 		height:    40,
 		showCores: false,
+		os:        osName,
+		kernel:    kernel,
+		arch:      arch,
 	}
 }
 
@@ -127,8 +133,8 @@ func (m Model) View() string {
 	var lines []string
 
 	// ── Title bar ────────────────────────────────────────────
-	header := fmt.Sprintf(" 🔮 KULA-SZPIEGULA │ %s │ ⏱ %s │ %s ",
-		s.System.Hostname, s.System.UptimeHuman, s.Timestamp.Format("15:04:05"))
+	header := fmt.Sprintf(" 🔮 KULA-SZPIEGULA │ %s │ %s │ %s │ %s │ ⏱ %s │ %s ",
+		s.System.Hostname, m.os, m.kernel, m.arch, s.System.UptimeHuman, s.Timestamp.Format("15:04:05"))
 	lines = append(lines, titleStyle.Width(m.width).Render(header))
 	lines = append(lines, "")
 
@@ -394,13 +400,13 @@ func maxInt(a, b int) int {
 	return b
 }
 
-func Run(c *collector.Collector, interval time.Duration) error {
-	m := NewModel(c, interval)
+func Run(c *collector.Collector, interval time.Duration, osName, kernel, arch string) error {
+	m := NewModel(c, interval, osName, kernel, arch)
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	_, err := p.Run()
 	return err
 }
 
-func RunHeadless(c *collector.Collector, interval time.Duration) error {
-	return Run(c, interval)
+func RunHeadless(c *collector.Collector, interval time.Duration, osName, kernel, arch string) error {
+	return Run(c, interval, osName, kernel, arch)
 }

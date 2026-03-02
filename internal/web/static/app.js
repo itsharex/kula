@@ -1450,6 +1450,18 @@
                     const versionEl = document.getElementById('kula-version');
                     if (versionEl) versionEl.textContent = 'v' + cfg.version;
                 }
+                if (cfg.os) {
+                    const osEl = document.getElementById('sys-os');
+                    if (osEl) osEl.textContent = cfg.os;
+                }
+                if (cfg.kernel) {
+                    const kernelEl = document.getElementById('sys-kernel');
+                    if (kernelEl) kernelEl.textContent = cfg.kernel;
+                }
+                if (cfg.arch) {
+                    const archEl = document.getElementById('sys-arch');
+                    if (archEl) archEl.textContent = cfg.arch;
+                }
             })
             .catch(() => { });
 

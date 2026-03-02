@@ -8,10 +8,12 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
 
+	"kula-szpiegula"
 	"kula-szpiegula/internal/collector"
 	"kula-szpiegula/internal/config"
 	"kula-szpiegula/internal/sandbox"
@@ -22,15 +24,7 @@ import (
 	"github.com/charmbracelet/x/term"
 )
 
-var version = "0.1.0"
-
-func init() {
-	if data, err := os.ReadFile("VERSION"); err == nil {
-		if v := strings.TrimSpace(string(data)); v != "" {
-			version = v
-		}
-	}
-}
+var version = kula.Version
 
 func printUsage() {
 	fmt.Fprintf(os.Stderr, `Kula-Szpiegula v%s — Lightweight Linux Server Monitor
@@ -57,9 +51,23 @@ Examples:
 }
 
 func main() {
+	var showVersion bool
+	var showVersionShort bool
+
 	flag.Usage = printUsage
+	flag.BoolVar(&showVersion, "version", false, "Print version and exit")
+	flag.BoolVar(&showVersionShort, "v", false, "Print version and exit")
 	configPath := flag.String("config", "config.yaml", "path to configuration file")
 	flag.Parse()
+
+	if showVersion || showVersionShort {
+		fmt.Printf("Kula-Szpiegula v%s — Lightweight Linux Server Monitor\n", version)
+		os.Exit(0)
+	}
+
+	osName := getOSName()
+	kernelVersion := getKernelVersion()
+	cpuArch := runtime.GOARCH
 
 	cmd := "serve"
 	if flag.NArg() > 0 {
@@ -81,17 +89,20 @@ func main() {
 
 	switch cmd {
 	case "serve":
-		runServe(cfg, *configPath)
+		runServe(cfg, *configPath, osName, kernelVersion, cpuArch)
 	case "tui":
-		runTUI(cfg)
+		runTUI(cfg, osName, kernelVersion, cpuArch)
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\nUsage: kula [serve|tui|hash-password]\n", cmd)
 		os.Exit(1)
 	}
 }
 
-func runServe(cfg *config.Config, configPath string) {
+func runServe(cfg *config.Config, configPath string, osName, kernelVersion, cpuArch string) {
 	cfg.Web.Version = version
+	cfg.Web.OS = osName
+	cfg.Web.Kernel = kernelVersion
+	cfg.Web.Arch = cpuArch
 	coll := collector.New()
 
 	store, err := storage.NewStore(cfg.Storage)
@@ -146,6 +157,7 @@ func runServe(cfg *config.Config, configPath string) {
 	}()
 
 	log.Printf("Kula-Szpiegula started (collecting every %s)", cfg.Collection.Interval)
+	log.Printf("OS: %s, Kernel: %s, Arch: %s", osName, kernelVersion, cpuArch)
 	<-ctx.Done()
 
 	log.Println("Shutting down...")
@@ -157,9 +169,9 @@ func runServe(cfg *config.Config, configPath string) {
 	}
 }
 
-func runTUI(cfg *config.Config) {
+func runTUI(cfg *config.Config, osName, kernelVersion, cpuArch string) {
 	coll := collector.New()
-	if err := tui.RunHeadless(coll, cfg.TUI.RefreshRate); err != nil {
+	if err := tui.RunHeadless(coll, cfg.TUI.RefreshRate, osName, kernelVersion, cpuArch); err != nil {
 		log.Fatalf("TUI error: %v", err)
 	}
 }

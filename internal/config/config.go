@@ -39,6 +39,9 @@ type WebConfig struct {
 	JoinMetrics bool       `yaml:"join_metrics"`
 	Logging     LogConfig  `yaml:"logging"`
 	Version     string     `yaml:"-"` // injected at runtime, not from config file
+	OS          string     `yaml:"-"`
+	Kernel      string     `yaml:"-"`
+	Arch        string     `yaml:"-"`
 }
 
 type LogConfig struct {
