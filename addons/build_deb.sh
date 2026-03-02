@@ -20,8 +20,8 @@ VERSION_FILE="${PROJECT_ROOT}/VERSION"
 if [ -f "${VERSION_FILE}" ]; then
     VERSION="$(head -1 "${VERSION_FILE}" | tr -d '[:space:]')"
 else
-    echo "Warning: VERSION file not found, using default 0.1.0"
-    VERSION="0.1.0"
+    VERSION="0.5.0"
+    echo "Warning: VERSION file not found, using default ${VERSION}"
 fi
 
 # Configuration
@@ -33,9 +33,9 @@ BUILD_DIR="build_deb"
 PKG_DIR="${BUILD_DIR}/${PKG_NAME}_${VERSION}_${ARCH}"
 
 # Check if binary exists, build if not
-if [ ! -f "dist/kula-linux-amd64" ]; then
+if [ ! -f "dist/kula-linux-${VERSION}-amd64" ]; then
     echo "kula binary not found, building first..."
-    ./build.sh cross
+    ${SCRIPT_DIR}/build.sh cross
 fi
 
 echo "Building Debian package v${VERSION}..."
@@ -54,7 +54,7 @@ mkdir -p "${PKG_DIR}/usr/share/man/man1"
 mkdir -p "${PKG_DIR}/lib/systemd/system"
 
 echo "Copying files..."
-cp dist/kula-linux-amd64 "${PKG_DIR}/usr/bin/kula"
+cp dist/kula-linux-${VERSION}-amd64 "${PKG_DIR}/usr/bin/kula"
 cp config.example.yaml "${PKG_DIR}/etc/kula/config.example.yaml"
 cp addons/bash-completion/kula "${PKG_DIR}/usr/share/bash-completion/completions/kula"
 cp addons/init/systemd/kula.service "${PKG_DIR}/lib/systemd/system/kula.service"
