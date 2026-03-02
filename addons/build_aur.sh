@@ -63,7 +63,7 @@ package() {
   install -dm755 "\$pkgdir/var/lib/kula"
 
   # Install bash completion
-  install -Dm644 docs/kula-completion.bash "\$pkgdir/usr/share/bash-completion/completions/kula"
+  install -Dm644 addons/bash-completion/kula "\$pkgdir/usr/share/bash-completion/completions/kula"
 
   # Install man page
   install -Dm644 docs/kula.1 "\$pkgdir/usr/share/man/man1/kula.1"

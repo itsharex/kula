@@ -54,7 +54,7 @@ mkdir -p "${PKG_DIR}/usr/share/man/man1"
 echo "Copying files..."
 cp kula "${PKG_DIR}/usr/bin/kula"
 cp config.example.yaml "${PKG_DIR}/etc/kula/config.example.yaml"
-cp docs/kula-completion.bash "${PKG_DIR}/usr/share/bash-completion/completions/kula"
+cp addons/bash-completion/kula "${PKG_DIR}/usr/share/bash-completion/completions/kula"
 
 # Compress and copy man page
 gzip -c docs/kula.1 > "${PKG_DIR}/usr/share/man/man1/kula.1.gz"
