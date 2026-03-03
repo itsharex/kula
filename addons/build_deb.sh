@@ -2,6 +2,24 @@
 
 set -e
 
+ARCH=$1
+
+if [ -z "$ARCH" ]; then
+    ARCH=$(cat /proc/sys/kernel/arch)
+    case "$ARCH" in
+        x86_64) ARCH="amd64" ;;
+        aarch64) ARCH="arm64" ;;
+        riscv64) ARCH="riscv64" ;;
+        *) echo "Unsupported architecture: $ARCH" ; exit 1 ;;
+    esac
+else
+    # only allow amd64,arm64,riscv64
+    case "$ARCH" in
+        amd64|arm64|riscv64) ;; # ok
+        *) echo "Unsupported architecture: $ARCH" ; exit 1 ;;
+    esac
+fi
+
 # Check if dpkg-deb is installed
 if ! command -v dpkg-deb &>/dev/null; then
     echo "Error: dpkg-deb is not installed."
@@ -26,14 +44,13 @@ fi
 
 # Configuration
 PKG_NAME="kula"
-ARCH="amd64"
 MAINTAINER="c0m4r"
 DESCRIPTION="Lightweight system monitoring daemon."
 BUILD_DIR="build_deb"
 PKG_DIR="${BUILD_DIR}/${PKG_NAME}_${VERSION}_${ARCH}"
 
 # Check if binary exists, build if not
-if [ ! -f "dist/kula-linux-${VERSION}-amd64" ]; then
+if [ ! -f "dist/kula-linux-${VERSION}-${ARCH}" ]; then
     echo "kula binary not found, building first..."
     ${SCRIPT_DIR}/build.sh cross
 fi
@@ -54,7 +71,7 @@ mkdir -p "${PKG_DIR}/usr/share/man/man1"
 mkdir -p "${PKG_DIR}/lib/systemd/system"
 
 echo "Copying files..."
-cp dist/kula-linux-${VERSION}-amd64 "${PKG_DIR}/usr/bin/kula"
+cp dist/kula-linux-${VERSION}-${ARCH} "${PKG_DIR}/usr/bin/kula"
 cp config.example.yaml "${PKG_DIR}/etc/kula/config.example.yaml"
 cp addons/bash-completion/kula "${PKG_DIR}/usr/share/bash-completion/completions/kula"
 cp addons/init/systemd/kula.service "${PKG_DIR}/lib/systemd/system/kula.service"
