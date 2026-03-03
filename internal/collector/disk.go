@@ -153,7 +153,7 @@ func collectFileSystems() []FileSystemInfo {
 		// Only real filesystems
 		switch fstype {
 		case "ext2", "ext3", "ext4", "xfs", "btrfs", "zfs", "f2fs",
-			"vfat", "ntfs", "fuseblk", "nfs", "nfs4", "cifs":
+			"fuseblk", "nfs", "nfs4", "cifs":
 		default:
 			continue
 		}
