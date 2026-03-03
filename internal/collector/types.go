@@ -19,8 +19,8 @@ type Sample struct {
 
 // CPUStats holds per-core and total CPU usage percentages.
 type CPUStats struct {
-	Total CPUCoreStats   `json:"total"`
-	Cores []CPUCoreStats `json:"cores"`
+	Total    CPUCoreStats `json:"total"`
+	NumCores int          `json:"num_cores"`
 }
 
 type CPUCoreStats struct {
@@ -47,18 +47,18 @@ type LoadAvg struct {
 }
 
 type MemoryStats struct {
-	Total        uint64 `json:"total"`
-	Free         uint64 `json:"free"`
-	Available    uint64 `json:"available"`
-	Used         uint64 `json:"used"`
-	Buffers      uint64 `json:"buffers"`
-	Cached       uint64 `json:"cached"`
-	SReclaimable uint64 `json:"sreclaimable"`
-	SUnreclaim   uint64 `json:"sunreclaim"`
-	Shmem        uint64 `json:"shmem"`
-	Dirty        uint64 `json:"dirty"`
-	Writeback    uint64 `json:"writeback"`
-	Mapped       uint64 `json:"mapped"`
+	Total        uint64  `json:"total"`
+	Free         uint64  `json:"free"`
+	Available    uint64  `json:"available"`
+	Used         uint64  `json:"used"`
+	Buffers      uint64  `json:"buffers"`
+	Cached       uint64  `json:"cached"`
+	SReclaimable uint64  `json:"sreclaimable"`
+	SUnreclaim   uint64  `json:"sunreclaim"`
+	Shmem        uint64  `json:"shmem"`
+	Dirty        uint64  `json:"dirty"`
+	Writeback    uint64  `json:"writeback"`
+	Mapped       uint64  `json:"mapped"`
 	UsedPercent  float64 `json:"used_pct"`
 }
 
@@ -124,7 +124,7 @@ type SocketStats struct {
 }
 
 type DiskStats struct {
-	Devices     []DiskDevice    `json:"devices"`
+	Devices     []DiskDevice     `json:"devices"`
 	FileSystems []FileSystemInfo `json:"filesystems"`
 }
 
@@ -141,16 +141,16 @@ type DiskDevice struct {
 }
 
 type FileSystemInfo struct {
-	Device     string  `json:"device"`
-	MountPoint string  `json:"mount"`
-	FSType     string  `json:"fstype"`
-	Total      uint64  `json:"total"`
-	Used       uint64  `json:"used"`
-	Available  uint64  `json:"available"`
-	UsedPct    float64 `json:"used_pct"`
-	InodesTotal uint64 `json:"inodes_total"`
-	InodesUsed  uint64 `json:"inodes_used"`
-	InodesFree  uint64 `json:"inodes_free"`
+	Device      string  `json:"device"`
+	MountPoint  string  `json:"mount"`
+	FSType      string  `json:"fstype"`
+	Total       uint64  `json:"total"`
+	Used        uint64  `json:"used"`
+	Available   uint64  `json:"available"`
+	UsedPct     float64 `json:"used_pct"`
+	InodesTotal uint64  `json:"inodes_total"`
+	InodesUsed  uint64  `json:"inodes_used"`
+	InodesFree  uint64  `json:"inodes_free"`
 }
 
 type SystemStats struct {

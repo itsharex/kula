@@ -98,31 +98,28 @@ func (c *Collector) collectCPU(_ float64) CPUStats {
 	}
 
 	result := CPUStats{}
+	var numCores int
 
 	if len(c.prevCPU) == len(current) {
 		for i, cur := range current {
-			cs := calcCorePct(c.prevCPU[i], cur)
 			if cur.id == "cpu" {
-				result.Total = cs
+				result.Total = calcCorePct(c.prevCPU[i], cur)
 			} else {
-				// Rename cpu0 -> 0 etc. for display
-				cs.ID = strings.TrimPrefix(cs.ID, "cpu")
-				result.Cores = append(result.Cores, cs)
+				numCores++
 			}
 		}
 	} else {
 		// First collection — no delta yet
 		for _, cur := range current {
-			cs := CPUCoreStats{ID: cur.id}
 			if cur.id == "cpu" {
-				result.Total = cs
+				result.Total = CPUCoreStats{ID: cur.id}
 			} else {
-				cs.ID = strings.TrimPrefix(cs.ID, "cpu")
-				result.Cores = append(result.Cores, cs)
+				numCores++
 			}
 		}
 	}
 
+	result.NumCores = numCores
 	c.prevCPU = current
 	return result
 }

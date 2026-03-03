@@ -121,12 +121,7 @@ func main() {
 					Idle:   round2(math.Max(0, 100-cpuBase)),
 					Usage:  round2(cpuBase),
 				},
-				Cores: []collector.CPUCoreStats{
-					{ID: "cpu0", Usage: round2(clamp(cpuBase+rng.Float64()*10-5, 0, 100))},
-					{ID: "cpu1", Usage: round2(clamp(cpuBase+rng.Float64()*10-5, 0, 100))},
-					{ID: "cpu2", Usage: round2(clamp(cpuBase+rng.Float64()*10-5, 0, 100))},
-					{ID: "cpu3", Usage: round2(clamp(cpuBase+rng.Float64()*10-5, 0, 100))},
-				},
+				NumCores: 4,
 			},
 			LoadAvg: collector.LoadAvg{
 				Load1:   cpuBase / 20.0,

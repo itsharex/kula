@@ -154,34 +154,11 @@ func (m Model) View() string {
 		lines = append(lines, fmt.Sprintf(" %s  %s %s", cpuLabel, cpuBar, cpuVal))
 		lines = append(lines, "      "+cpuDetail)
 
-		// Per-core (hidden by default, toggled with 'a')
-		if m.showCores {
-			coresPerRow := 2
-			if m.width > 140 {
-				coresPerRow = 4
-			} else if m.width > 100 {
-				coresPerRow = 3
-			}
-			coreBarW := clamp((m.width-8)/coresPerRow-14, 5, 25)
-
-			for i := 0; i < len(s.CPU.Cores); i += coresPerRow {
-				row := "      "
-				for j := 0; j < coresPerRow && i+j < len(s.CPU.Cores); j++ {
-					core := s.CPU.Cores[i+j]
-					coreId := fmt.Sprintf("c%-2s", core.ID)
-					row += fmt.Sprintf("%s %s %s  ",
-						dimStyle.Render(coreId),
-						renderBar(core.Usage, 100, coreBarW),
-						colorByPct(core.Usage).Render(fmt.Sprintf("%4.0f%%", core.Usage)))
-				}
-				lines = append(lines, row)
-			}
-		}
 	}
 	lines = append(lines, "")
 
 	// ── Load Average ─────────────────────────────────────────
-	numCores := maxInt(len(s.CPU.Cores), 1)
+	numCores := maxInt(s.CPU.NumCores, 1)
 	la1Style := valueStyle
 	if s.LoadAvg.Load1 > float64(numCores) {
 		la1Style = warnStyle

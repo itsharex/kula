@@ -99,7 +99,7 @@
         const ramPct = sample.mem?.used_pct || 0;
         const swapPct = sample.swap?.used_pct || 0;
         const lavg = sample.lavg?.load1 || 0;
-        const numCores = (sample.cpu?.cores?.length || 1);
+        const numCores = (sample.cpu?.num_cores || 1);
 
         // Sum network across non-lo interfaces
         let dlMbps = 0, ulMbps = 0;
@@ -203,6 +203,7 @@
             { label: 'Steal', borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
             { label: 'Total', borderColor: colors.cyan, data: [], fill: false, borderWidth: 2 },
         ], { max: 100, ticks: { callback: v => v + '%' } });
+
 
         // Load Average
         state.charts.loadavg = createTimeSeriesChart('chart-loadavg', [
@@ -346,6 +347,7 @@
             const usageVal = item.peak_cpu !== undefined ? item.peak_cpu : s.cpu.total.usage;
             state.charts.cpu.data.datasets[4].data.push(point(usageVal));
         }
+
 
         // Load Average
         if (state.charts.loadavg && s.lavg) {
@@ -668,7 +670,7 @@
     // ---- Alert System ----
     function evaluateAlerts(sample) {
         const alerts = [];
-        const numCores = sample.cpu?.cores?.length || 1;
+        const numCores = sample.cpu?.num_cores || 1;
 
         // Clock not synced
         if (sample.sys?.clock_synced === false) {
@@ -808,7 +810,7 @@
         const el = (id, text) => { const e = document.getElementById(id); if (e) e.textContent = text; };
 
         if (s.cpu?.total) {
-            el('cpu-subtitle', `usr:${s.cpu.total.user.toFixed(1)}% sys:${s.cpu.total.system.toFixed(1)}% io:${s.cpu.total.iowait.toFixed(1)}% ${s.cpu.cores?.length || 0} cores`);
+            el('cpu-subtitle', `usr:${s.cpu.total.user.toFixed(1)}% sys:${s.cpu.total.system.toFixed(1)}% io:${s.cpu.total.iowait.toFixed(1)}% ${s.cpu.num_cores || 0} cores`);
         }
         if (s.lavg) el('lavg-subtitle', `${s.lavg.load1.toFixed(2)} / ${s.lavg.load5.toFixed(2)} / ${s.lavg.load15.toFixed(2)}`);
         // Memory — with % appended

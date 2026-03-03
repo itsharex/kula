@@ -35,6 +35,9 @@ func parseNetDev() map[string]netRaw {
 			continue
 		}
 		name := strings.TrimSpace(parts[0])
+		if strings.HasPrefix(name, "veth") || strings.HasPrefix(name, "docker") || strings.HasPrefix(name, "br-") {
+			continue
+		}
 		fields := strings.Fields(parts[1])
 		if len(fields) < 16 {
 			continue
