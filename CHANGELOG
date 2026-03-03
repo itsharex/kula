@@ -19,10 +19,16 @@ Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security
 - Storage size optimization: Round CPU and network values to 2 decimal places before saving
 - Storage size optimization: Ignore `loop` and `tmpfs` devices
 - Updated mock data generator
+- replace static disk usage chart with over time data
+- round _pct (percentage) values
 
 ### Fixed
 
 - Fixed hardcoded tier resolutions in web UI
+
+### Removed
+
+- non-linux filesystems
 
 ## [0.6.0] - 2026-03-03
 
