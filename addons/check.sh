@@ -8,6 +8,14 @@ RESET="\033[0m"
 
 cd "$(dirname "$0")/.."
 
+echo -e 
+if [ -x ~/go/bin/govulncheck ]; then
+    echo -e "${CYAN}Running govulncheck...${RESET}"
+    ~/go/bin/govulncheck ./...
+else
+    echo "Skipping govulncheck: not found" ; sleep 3
+fi
+
 echo -e "${CYAN}Running go vet...${RESET}"
 go vet ./...
 
