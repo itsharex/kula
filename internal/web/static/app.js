@@ -1404,7 +1404,7 @@
         const isExpanded = card.classList.toggle('chart-expanded');
         const btn = card.querySelector('.btn-expand-chart');
         if (btn) btn.title = isExpanded ? 'Collapse chart' : 'Expand chart';
-        if (btn) btn.textContent = isExpanded ? '⊡' : '⊞';
+        if (btn) btn.textContent = isExpanded ? '✖️' : '🔍';
         // Resize the Chart.js instance so it fills the new dimensions
         const canvas = card.querySelector('canvas');
         if (canvas) {
@@ -1422,7 +1422,7 @@
             const btn = document.createElement('button');
             btn.className = 'btn-icon btn-expand-chart';
             btn.title = 'Expand chart';
-            btn.textContent = '⊞';
+            btn.textContent = '🔍';
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleExpandChart(card.id);
