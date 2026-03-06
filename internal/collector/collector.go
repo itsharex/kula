@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	procPath = "/proc"
-	sysPath  = "/sys"
-	runPath  = "/run"
+	procPath   = "/proc"
+	sysPath    = "/sys"
+	runPath    = "/run"
+	varRunPath = "/var/run"
 )
 
 // Collector orchestrates all metric sub-collectors.

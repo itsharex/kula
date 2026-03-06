@@ -4,6 +4,8 @@ import (
 	"kula-szpiegula/internal/config"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -235,4 +237,52 @@ func TestAuthMiddlewareBearerToken(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Errorf("Bearer token: status = %d, want 200", rec.Code)
 	}
+}
+
+func TestSessionHashingOnDisk(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	am := NewAuthManager(config.AuthConfig{
+		Enabled:        true,
+		SessionTimeout: time.Hour,
+	}, tmpDir)
+
+	token, err := am.CreateSession("admin", "127.0.0.1", "agent")
+	if err != nil {
+		t.Fatalf("CreateSession error: %v", err)
+	}
+	if err := am.SaveSessions(); err != nil {
+		t.Fatalf("SaveSessions error: %v", err)
+	}
+
+	// Read sessions.json directly
+	data, err := os.ReadFile(filepath.Join(tmpDir, "sessions.json"))
+	if err != nil {
+		t.Fatalf("ReadFile error: %v", err)
+	}
+	if len(data) == 0 {
+		t.Fatal("sessions.json is empty")
+	}
+
+	if contains(string(data), token) {
+		t.Error("sessions.json contains the plaintext token! hashing failed or not implemented for storage")
+	}
+
+	hashed := hashToken(token)
+	if !contains(string(data), hashed) {
+		t.Error("sessions.json does not contain the hashed token")
+	}
+}
+
+func contains(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || (len(s) > len(substr) && stringContains(s, substr)))
+}
+
+func stringContains(s, substr string) bool {
+	for i := 0; i+len(substr) <= len(s); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
 }

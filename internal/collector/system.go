@@ -49,21 +49,22 @@ func checkClockSync() bool {
 	}
 	// As a fallback, check if chrony or ntp socket exists
 	for _, path := range []string{
-		"/var/run/chrony/chronyd.pid",
-		"/var/run/ntpd.pid",
-		"/run/chrony/chronyd.pid",
-		"/run/ntpd.pid",
+		filepath.Join(varRunPath, "chrony/chronyd.pid"),
+		filepath.Join(varRunPath, "ntpd.pid"),
+		filepath.Join(runPath, "chrony/chronyd.pid"),
+		filepath.Join(runPath, "ntpd.pid"),
 	} {
-		if _, err := os.Stat(path); err == nil {
-			return true
+		if _, err := os.Stat(path); err != nil {
+			continue
 		}
+		return true
 	}
 	return false
 }
 
 // countLoggedInUsers reads /var/run/utmp to count logged-in users.
 func countLoggedInUsers() int {
-	f, err := os.Open("/var/run/utmp")
+	f, err := os.Open(filepath.Join(varRunPath, "utmp"))
 	if err != nil {
 		return countUsersFromProc()
 	}

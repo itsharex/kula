@@ -2,6 +2,7 @@ package web
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
@@ -93,6 +94,12 @@ func HashPassword(password, salt string, params config.Argon2Config) string {
 	return hex.EncodeToString(hash)
 }
 
+// hashToken returns a SHA-256 hash of the session token.
+func hashToken(token string) string {
+	h := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(h[:])
+}
+
 // GenerateSalt creates a random 32-byte hex salt.
 func GenerateSalt() (string, error) {
 	b := make([]byte, 32)
@@ -125,7 +132,8 @@ func (a *AuthManager) CreateSession(username, ip, userAgent string) (string, err
 	if err != nil {
 		return "", err
 	}
-	a.sessions[token] = &session{
+	hashedToken := hashToken(token)
+	a.sessions[hashedToken] = &session{
 		username:  username,
 		ip:        ip,
 		userAgent: userAgent,
@@ -141,13 +149,14 @@ func (a *AuthManager) ValidateSession(token, ip, userAgent string) bool {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	sess, ok := a.sessions[token]
+	hashedToken := hashToken(token)
+	sess, ok := a.sessions[hashedToken]
 	if !ok {
 		return false
 	}
 
 	if time.Now().After(sess.expiresAt) {
-		delete(a.sessions, token)
+		delete(a.sessions, hashedToken)
 		return false
 	}
 
@@ -165,7 +174,8 @@ func (a *AuthManager) ValidateSession(token, ip, userAgent string) bool {
 func (a *AuthManager) RevokeSession(token string) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	delete(a.sessions, token)
+	hashedToken := hashToken(token)
+	delete(a.sessions, hashedToken)
 }
 
 // AuthMiddleware protects routes when auth is enabled.
@@ -235,6 +245,7 @@ func (a *AuthManager) LoadSessions() error {
 	now := time.Now()
 	for _, sd := range saved {
 		if now.Before(sd.ExpiresAt) {
+			// In hashed version, sd.Token is actually the hash
 			a.sessions[sd.Token] = &session{
 				username:  sd.Username,
 				ip:        sd.IP,
@@ -255,10 +266,10 @@ func (a *AuthManager) SaveSessions() error {
 
 	var toSave []sessionData
 	now := time.Now()
-	for token, sess := range a.sessions {
+	for hashedToken, sess := range a.sessions {
 		if now.Before(sess.expiresAt) {
 			toSave = append(toSave, sessionData{
-				Token:     token,
+				Token:     hashedToken,
 				Username:  sess.username,
 				IP:        sess.ip,
 				UserAgent: sess.userAgent,
