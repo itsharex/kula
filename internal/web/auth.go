@@ -4,8 +4,11 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -17,10 +20,11 @@ import (
 // AuthManager handles authentication validation and sessions.
 
 type AuthManager struct {
-	mu       sync.RWMutex
-	cfg      config.AuthConfig
-	sessions map[string]*session
-	Limiter  *RateLimiter
+	mu         sync.RWMutex
+	cfg        config.AuthConfig
+	storageDir string
+	sessions   map[string]*session
+	Limiter    *RateLimiter
 }
 
 // RateLimiter tracks recent rapid login attempts by IP.
@@ -31,14 +35,27 @@ type RateLimiter struct {
 
 type session struct {
 	username  string
+	ip        string
+	userAgent string
 	createdAt time.Time
 	expiresAt time.Time
 }
 
-func NewAuthManager(cfg config.AuthConfig) *AuthManager {
+// sessionData is used for JSON serialization of sessions.
+type sessionData struct {
+	Token     string    `json:"token"`
+	Username  string    `json:"username"`
+	IP        string    `json:"ip"`
+	UserAgent string    `json:"user_agent"`
+	CreatedAt time.Time `json:"created_at"`
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+func NewAuthManager(cfg config.AuthConfig, storageDir string) *AuthManager {
 	return &AuthManager{
-		cfg:      cfg,
-		sessions: make(map[string]*session),
+		cfg:        cfg,
+		storageDir: storageDir,
+		sessions:   make(map[string]*session),
 		Limiter: &RateLimiter{
 			attempts: make(map[string][]time.Time),
 		},
@@ -104,7 +121,7 @@ func (a *AuthManager) ValidateCredentials(username, password string) bool {
 }
 
 // CreateSession creates a new authenticated session.
-func (a *AuthManager) CreateSession(username string) (string, error) {
+func (a *AuthManager) CreateSession(username, ip, userAgent string) (string, error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
@@ -114,6 +131,8 @@ func (a *AuthManager) CreateSession(username string) (string, error) {
 	}
 	a.sessions[token] = &session{
 		username:  username,
+		ip:        ip,
+		userAgent: userAgent,
 		createdAt: time.Now(),
 		expiresAt: time.Now().Add(a.cfg.SessionTimeout),
 	}
@@ -121,23 +140,27 @@ func (a *AuthManager) CreateSession(username string) (string, error) {
 	return token, nil
 }
 
-// ValidateSession checks if a session token is valid.
-func (a *AuthManager) ValidateSession(token string) bool {
-	a.mu.RLock()
+// ValidateSession checks if a session token is valid and matches client fingerprint.
+func (a *AuthManager) ValidateSession(token, ip, userAgent string) bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	sess, ok := a.sessions[token]
 	if !ok {
-		a.mu.RUnlock()
 		return false
 	}
 
 	if time.Now().After(sess.expiresAt) {
-		a.mu.RUnlock()
-		a.mu.Lock()
 		delete(a.sessions, token)
-		a.mu.Unlock()
 		return false
 	}
-	a.mu.RUnlock()
+
+	if sess.ip != ip || sess.userAgent != userAgent {
+		return false
+	}
+
+	// Sliding expiration
+	sess.expiresAt = time.Now().Add(a.cfg.SessionTimeout)
 
 	return true
 }
@@ -150,9 +173,15 @@ func (a *AuthManager) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			ip = r.RemoteAddr
+		}
+		userAgent := r.UserAgent()
+
 		// Check cookie
 		cookie, err := r.Cookie("kula_session")
-		if err == nil && a.ValidateSession(cookie.Value) {
+		if err == nil && a.ValidateSession(cookie.Value, ip, userAgent) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -161,7 +190,7 @@ func (a *AuthManager) AuthMiddleware(next http.Handler) http.Handler {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader != "" && len(authHeader) > 7 && authHeader[:7] == "Bearer " {
 			token := authHeader[7:]
-			if a.ValidateSession(token) {
+			if a.ValidateSession(token, ip, userAgent) {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -182,6 +211,70 @@ func (a *AuthManager) CleanupSessions() {
 			delete(a.sessions, token)
 		}
 	}
+}
+
+// LoadSessions loads sessions from disk.
+func (a *AuthManager) LoadSessions() error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	path := filepath.Join(a.storageDir, "sessions.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil // No sessions to load
+		}
+		return err
+	}
+
+	var saved []sessionData
+	if err := json.Unmarshal(data, &saved); err != nil {
+		return err
+	}
+
+	now := time.Now()
+	for _, sd := range saved {
+		if now.Before(sd.ExpiresAt) {
+			a.sessions[sd.Token] = &session{
+				username:  sd.Username,
+				ip:        sd.IP,
+				userAgent: sd.UserAgent,
+				createdAt: sd.CreatedAt,
+				expiresAt: sd.ExpiresAt,
+			}
+		}
+	}
+
+	return nil
+}
+
+// SaveSessions writes active sessions to disk.
+func (a *AuthManager) SaveSessions() error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	var toSave []sessionData
+	now := time.Now()
+	for token, sess := range a.sessions {
+		if now.Before(sess.expiresAt) {
+			toSave = append(toSave, sessionData{
+				Token:     token,
+				Username:  sess.username,
+				IP:        sess.ip,
+				UserAgent: sess.userAgent,
+				CreatedAt: sess.createdAt,
+				ExpiresAt: sess.expiresAt,
+			})
+		}
+	}
+
+	data, err := json.Marshal(toSave)
+	if err != nil {
+		return err
+	}
+
+	path := filepath.Join(a.storageDir, "sessions.json")
+	return os.WriteFile(path, data, 0600)
 }
 
 func generateToken() (string, error) {

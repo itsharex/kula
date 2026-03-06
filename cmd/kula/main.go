@@ -115,7 +115,7 @@ func runServe(cfg *config.Config, configPath string, osName, kernelVersion, cpuA
 		log.Printf("Warning: Landlock sandbox not enforced: %v", err)
 	}
 
-	server := web.NewServer(cfg.Web, coll, store)
+	server := web.NewServer(cfg.Web, coll, store, cfg.Storage.Directory)
 
 	// Signal handling with Context
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

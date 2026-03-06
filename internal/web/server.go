@@ -32,12 +32,12 @@ type Server struct {
 	httpSrv   *http.Server
 }
 
-func NewServer(cfg config.WebConfig, c *collector.Collector, s *storage.Store) *Server {
+func NewServer(cfg config.WebConfig, c *collector.Collector, s *storage.Store, storageDir string) *Server {
 	srv := &Server{
 		cfg:       cfg,
 		collector: c,
 		store:     s,
-		auth:      NewAuthManager(cfg.Auth),
+		auth:      NewAuthManager(cfg.Auth, storageDir),
 		hub:       newWSHub(),
 	}
 	return srv
@@ -109,6 +109,10 @@ func securityMiddleware(next http.Handler) http.Handler {
 }
 
 func (s *Server) Start() error {
+	if err := s.auth.LoadSessions(); err != nil {
+		log.Printf("Warning: failed to load sessions: %v", err)
+	}
+
 	mux := http.NewServeMux()
 
 	// API routes
@@ -222,6 +226,10 @@ func (s *Server) createListeners() ([]net.Listener, error) {
 
 // Shutdown gracefully stops the web server.
 func (s *Server) Shutdown(ctx context.Context) error {
+	if err := s.auth.SaveSessions(); err != nil {
+		log.Printf("Warning: failed to save sessions: %v", err)
+	}
+
 	if s.httpSrv != nil {
 		return s.httpSrv.Shutdown(ctx)
 	}
@@ -341,7 +349,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := s.auth.CreateSession(creds.Username)
+	token, err := s.auth.CreateSession(creds.Username, ip, r.UserAgent())
 	if err != nil {
 		http.Error(w, `{"error":"internal server error"}`, http.StatusInternalServerError)
 		return
@@ -372,8 +380,14 @@ func (s *Server) handleAuthStatus(w http.ResponseWriter, r *http.Request) {
 	if !s.cfg.Auth.Enabled {
 		status["authenticated"] = true
 	} else {
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			ip = r.RemoteAddr
+		}
+		userAgent := r.UserAgent()
+
 		cookie, err := r.Cookie("kula_session")
-		if err == nil && s.auth.ValidateSession(cookie.Value) {
+		if err == nil && s.auth.ValidateSession(cookie.Value, ip, userAgent) {
 			status["authenticated"] = true
 		}
 	}

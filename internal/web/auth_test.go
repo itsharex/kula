@@ -59,7 +59,7 @@ func TestGenerateSalt(t *testing.T) {
 }
 
 func TestValidateCredentialsDisabled(t *testing.T) {
-	am := NewAuthManager(config.AuthConfig{Enabled: false})
+	am := NewAuthManager(config.AuthConfig{Enabled: false}, "")
 	if !am.ValidateCredentials("any", "any") {
 		t.Error("With auth disabled, ValidateCredentials should return true")
 	}
@@ -73,7 +73,7 @@ func TestValidateCredentialsCorrect(t *testing.T) {
 		Username:     "admin",
 		PasswordHash: hash,
 		PasswordSalt: salt,
-	})
+	}, "")
 	if !am.ValidateCredentials("admin", "secret") {
 		t.Error("Valid credentials should pass")
 	}
@@ -87,7 +87,7 @@ func TestValidateCredentialsWrong(t *testing.T) {
 		Username:     "admin",
 		PasswordHash: hash,
 		PasswordSalt: salt,
-	})
+	}, "")
 	if am.ValidateCredentials("admin", "wrong") {
 		t.Error("Wrong password should fail")
 	}
@@ -100,19 +100,19 @@ func TestSessionLifecycle(t *testing.T) {
 	am := NewAuthManager(config.AuthConfig{
 		Enabled:        true,
 		SessionTimeout: time.Hour,
-	})
+	}, "")
 
-	token, err := am.CreateSession("admin")
+	token, err := am.CreateSession("admin", "127.0.0.1", "test-agent")
 	if err != nil {
 		t.Fatalf("CreateSession error: %v", err)
 	}
 	if token == "" {
 		t.Fatal("CreateSession returned empty token")
 	}
-	if !am.ValidateSession(token) {
+	if !am.ValidateSession(token, "127.0.0.1", "test-agent") {
 		t.Error("Newly created session should be valid")
 	}
-	if am.ValidateSession("invalid_token") {
+	if am.ValidateSession("invalid_token", "127.0.0.1", "test-agent") {
 		t.Error("Invalid token should not validate")
 	}
 }
@@ -121,11 +121,11 @@ func TestSessionExpiry(t *testing.T) {
 	am := NewAuthManager(config.AuthConfig{
 		Enabled:        true,
 		SessionTimeout: time.Millisecond, // very short timeout
-	})
+	}, "")
 
-	token, _ := am.CreateSession("admin")
+	token, _ := am.CreateSession("admin", "127.0.0.1", "test-agent")
 	time.Sleep(5 * time.Millisecond)
-	if am.ValidateSession(token) {
+	if am.ValidateSession(token, "127.0.0.1", "test-agent") {
 		t.Error("Expired session should not validate")
 	}
 }
@@ -134,10 +134,10 @@ func TestCleanupSessions(t *testing.T) {
 	am := NewAuthManager(config.AuthConfig{
 		Enabled:        true,
 		SessionTimeout: time.Millisecond,
-	})
+	}, "")
 
-	_, _ = am.CreateSession("user1")
-	_, _ = am.CreateSession("user2")
+	_, _ = am.CreateSession("user1", "127.0.0.1", "test-agent")
+	_, _ = am.CreateSession("user2", "127.0.0.1", "test-agent")
 	time.Sleep(5 * time.Millisecond)
 	am.CleanupSessions()
 
@@ -151,7 +151,7 @@ func TestCleanupSessions(t *testing.T) {
 }
 
 func TestAuthMiddlewareDisabled(t *testing.T) {
-	am := NewAuthManager(config.AuthConfig{Enabled: false})
+	am := NewAuthManager(config.AuthConfig{Enabled: false}, "")
 	handler := am.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -169,7 +169,7 @@ func TestAuthMiddlewareNoToken(t *testing.T) {
 	am := NewAuthManager(config.AuthConfig{
 		Enabled:        true,
 		SessionTimeout: time.Hour,
-	})
+	}, "")
 	handler := am.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -187,14 +187,16 @@ func TestAuthMiddlewareValidCookie(t *testing.T) {
 	am := NewAuthManager(config.AuthConfig{
 		Enabled:        true,
 		SessionTimeout: time.Hour,
-	})
-	token, _ := am.CreateSession("admin")
+	}, "")
+	token, _ := am.CreateSession("admin", "127.0.0.1", "mock-agent")
 
 	handler := am.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
 	req := httptest.NewRequest("GET", "/api/test", nil)
+	req.Header.Set("X-Forwarded-For", "127.0.0.1")
+	req.Header.Set("User-Agent", "mock-agent")
 	req.AddCookie(&http.Cookie{Name: "kula_session", Value: token})
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
@@ -208,14 +210,16 @@ func TestAuthMiddlewareBearerToken(t *testing.T) {
 	am := NewAuthManager(config.AuthConfig{
 		Enabled:        true,
 		SessionTimeout: time.Hour,
-	})
-	token, _ := am.CreateSession("admin")
+	}, "")
+	token, _ := am.CreateSession("admin", "127.0.0.1", "mock-agent")
 
 	handler := am.AuthMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
 	req := httptest.NewRequest("GET", "/api/test", nil)
+	req.Header.Set("X-Forwarded-For", "127.0.0.1")
+	req.Header.Set("User-Agent", "mock-agent")
 	req.Header.Set("Authorization", "Bearer "+token)
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
