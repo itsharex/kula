@@ -20,7 +20,7 @@ Zero dependencies. No external databases. Single binary. Just deploy and go.
 
 ---
 
-## What It Does
+## 📦 What It Does
 
 Kula collects system metrics every second by reading directly from `/proc` and `/sys`, stores them in a built-in tiered ring-buffer storage engine, and serves them through a real-time Web UI dashboard and a terminal TUI.
 
@@ -38,7 +38,7 @@ Kula collects system metrics every second by reading directly from `/proc` and `
 
 ---
 
-## How It Works
+## 🪩 How It Works
 
 ```
                     ┌──────────────────────────────────────────────┐
@@ -91,7 +91,7 @@ The frontend is a single-page application embedded in the binary. Built on Chart
 - Alert system for clock sync, entropy issues, overload
 ---
 
-## Installation
+## 💾 Installation
 
 Example installation methods for **amd64 (x86_64)** GNU/Linux.
 
@@ -126,7 +126,7 @@ bash addons/build.sh
 
 ---
 
-## Usage
+## 💻 Usage
 
 ### Quick Start
 
@@ -171,13 +171,13 @@ sudo ln -s /etc/sv/kula /var/service/
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 All settings live in `config.yaml`. See [`config.example.yaml`](config.example.yaml) for defaults.
 
 ---
 
-## Development
+## 🧰 Development
 
 ```bash
 # Lint + test suite
@@ -248,13 +248,13 @@ docker compose -f addons/docker/docker-compose.yml up -d
 
 ---
 
-## License
+## 📖 License
 
 [GNU Affero General Public License v3.0](LICENSE)
 
 ---
 
-## Attributions
+## 🫶 Attributions
 
 - Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.
 - [Chart.js](https://www.chartjs.org/) library licensed under MIT
