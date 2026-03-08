@@ -129,6 +129,7 @@
 
     function updateGauges(sample) {
         const cpuPct = sample.cpu?.total?.usage || 0;
+        const cpuTemp = sample.cpu?.temp || 0;
         const ramPct = sample.mem?.used_pct || 0;
         const swapPct = sample.swap?.used_pct || 0;
         const lavg = sample.lavg?.load1 || 0;
@@ -144,6 +145,18 @@
 
         drawBarGauge('gauge-cpu-canvas', cpuPct, 100, [colors.green, colors.yellow, colors.red]);
         document.getElementById('gauge-cpu-value').textContent = cpuPct.toFixed(1) + '%';
+        const tempEl = document.getElementById('gauge-cpu-temp');
+        if (tempEl) {
+            if (cpuTemp > 0) {
+                tempEl.textContent = cpuTemp.toFixed(1) + '°C';
+                if (cpuTemp >= 85) tempEl.style.color = colors.red;
+                else if (cpuTemp >= 70) tempEl.style.color = colors.orange;
+                else tempEl.style.color = 'var(--text-muted)';
+            } else {
+                tempEl.textContent = '--°C';
+                tempEl.style.color = 'var(--text-muted)';
+            }
+        }
 
         drawBarGauge('gauge-ram-canvas', ramPct, 100, [colors.cyan, colors.blue, colors.purple]);
         document.getElementById('gauge-ram-value').textContent = ramPct.toFixed(1) + '%';
@@ -240,6 +253,11 @@
             { label: 'Total', borderColor: colors.cyan, data: [], fill: false, borderWidth: 2 },
         ], { max: 100, ticks: { callback: v => v + '%' } });
 
+        // CPU Temperature
+        state.charts.cputemp = createTimeSeriesChart('chart-cpu-temp', [
+            { label: 'Temperature', borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
+            { label: 'Peak Temp', borderColor: colors.red, data: [], fill: false, borderDash: [4, 2] },
+        ], { ticks: { callback: v => v.toFixed(1) + '°C' } });
 
         // Load Average
         state.charts.loadavg = createTimeSeriesChart('chart-loadavg', [
@@ -406,6 +424,18 @@
             state.charts.cpu.data.datasets[4].data.push(point(usageVal));
         }
 
+        // CPU Temperature
+        const tempCard = document.getElementById('card-cpu-temp');
+        if (state.charts.cputemp && s.cpu?.temp > 0) {
+            if (tempCard) tempCard.classList.remove('hidden');
+            state.charts.cputemp.data.datasets[0].data.push(point(s.cpu.temp));
+
+            // Show peak temperature if available
+            const tempVal = item.peak_temp !== undefined ? item.peak_temp : s.cpu.temp;
+            state.charts.cputemp.data.datasets[1].data.push(point(tempVal));
+        } else if (tempCard && !tempCard.classList.contains('hidden')) {
+            tempCard.classList.add('hidden');
+        }
 
         // Load Average
         if (state.charts.loadavg && s.lavg) {

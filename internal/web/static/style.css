@@ -505,6 +505,12 @@ body {
     margin-top: 0.15rem;
 }
 
+#gauge-cpu-temp {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
 /* ---- Bar Gauge (alternative layout) ---- */
 .bar-gauge-container {
     width: 100%;

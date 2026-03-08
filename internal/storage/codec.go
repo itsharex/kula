@@ -17,6 +17,7 @@ type AggregatedSample struct {
 	Duration     time.Duration     `json:"dur"`
 	Data         *collector.Sample `json:"data"`
 	PeakCPU      *float64          `json:"peak_cpu,omitempty"`
+	PeakTemp     *float64          `json:"peak_temp,omitempty"`
 	PeakDiskUtil *float64          `json:"peak_disk_util,omitempty"`
 	PeakRxMbps   *float64          `json:"peak_rx_mbps,omitempty"`
 	PeakTxMbps   *float64          `json:"peak_tx_mbps,omitempty"`

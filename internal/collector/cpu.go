@@ -15,6 +15,12 @@ type cpuRaw struct {
 	guest, guestNice                                      uint64
 }
 
+var (
+	// Cached path to the CPU temperature file so we don't scan on every tick.
+	// Empty means initialized but not found, nil means not yet initialized.
+	sysTempPath *string
+)
+
 func parseProcStat() []cpuRaw {
 	f, err := os.Open(filepath.Join(procPath, "stat"))
 	if err != nil {
@@ -141,6 +147,102 @@ func collectLoadAvg() LoadAvg {
 		la.Total, _ = strconv.Atoi(parts[1])
 	}
 	return la
+}
+
+// collectCPUTemperature reads the CPU temperature from sysfs.
+func collectCPUTemperature() float64 {
+	if sysTempPath == nil {
+		path := discoverCPUTempPath()
+		sysTempPath = &path
+	}
+
+	if *sysTempPath == "" {
+		return 0 // No temperature sensor found
+	}
+
+	data, err := os.ReadFile(*sysTempPath)
+	if err != nil {
+		// Sensor might have disappeared or is temporarily unreadable
+		return 0
+	}
+
+	// Usually in millidegrees Celsius
+	valStr := strings.TrimSpace(string(data))
+	tempMilliC := parseUint(valStr, 10, 64, "cpu.temp")
+	if tempMilliC == 0 && valStr != "0" {
+		return 0
+	}
+
+	return round2(float64(tempMilliC) / 1000.0)
+}
+
+// discoverCPUTempPath attempts to find a file containing the CPU temperature.
+func discoverCPUTempPath() string {
+	// 1. Try hwmon (usually more reliable on x86, e.g. coretemp, k10temp, zenpower)
+	hwmonPath := filepath.Join(sysPath, "class", "hwmon")
+	entries, err := os.ReadDir(hwmonPath)
+	if err == nil {
+		for _, entry := range entries {
+			if !entry.IsDir() && entry.Type()&os.ModeSymlink == 0 {
+				continue
+			}
+
+			dir := filepath.Join(hwmonPath, entry.Name())
+
+			// Some systems nest hwmon under device module
+			nameFile := filepath.Join(dir, "name")
+			nameData, err := os.ReadFile(nameFile)
+			if err != nil {
+				continue
+			}
+			name := strings.TrimSpace(string(nameData))
+
+			// Common CPU temperature drivers
+			if name == "coretemp" || name == "k10temp" || name == "zenpower" || name == "cpu_thermal" {
+				// Find the input file, usually temp1_input
+				// We can just scan for temp*_input
+				inputs, _ := filepath.Glob(filepath.Join(dir, "temp*_input"))
+				if len(inputs) > 0 {
+					return inputs[0] // Return the first one found
+				}
+			}
+		}
+	}
+
+	// 2. Try thermal_zone (Common on ARM/Raspberry Pi)
+	thermalPath := filepath.Join(sysPath, "class", "thermal")
+	entries, err = os.ReadDir(thermalPath)
+	if err == nil {
+		for _, entry := range entries {
+			if !strings.HasPrefix(entry.Name(), "thermal_zone") {
+				continue
+			}
+
+			dir := filepath.Join(thermalPath, entry.Name())
+			typeFile := filepath.Join(dir, "type")
+			typeData, err := os.ReadFile(typeFile)
+			if err != nil {
+				continue
+			}
+
+			typ := strings.TrimSpace(string(typeData))
+			// Usually named something like "cpu-thermal", "cpu_thermal", "x86_pkg_temp"
+			if strings.Contains(strings.ToLower(typ), "cpu") || strings.Contains(strings.ToLower(typ), "pkg_temp") {
+				tempFile := filepath.Join(dir, "temp")
+				if _, err := os.Stat(tempFile); err == nil {
+					return tempFile
+				}
+			}
+		}
+
+		// Fallback: If no explicit 'cpu' type is found, thermal_zone0 is often the main CPU temp
+		temp0 := filepath.Join(thermalPath, "thermal_zone0", "temp")
+		if _, err := os.Stat(temp0); err == nil {
+			return temp0
+		}
+	}
+
+	return ""
 }
 
 func collectMemory() MemoryStats {

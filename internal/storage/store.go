@@ -375,7 +375,7 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 
 	avg := *last
 
-	var peakCPU, peakDiskUtil, peakRx, peakTx float64
+	var peakCPU, peakTemp, peakDiskUtil, peakRx, peakTx float64
 
 	if len(samples) > 1 {
 		var totalCPU float64
@@ -383,6 +383,9 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 			totalCPU += s.CPU.Total.Usage
 			if s.CPU.Total.Usage > peakCPU {
 				peakCPU = s.CPU.Total.Usage
+			}
+			if s.CPU.Temperature > peakTemp {
+				peakTemp = s.CPU.Temperature
 			}
 
 			// Peak disk utilisation across all devices in this sample
@@ -430,6 +433,7 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 	} else {
 		// Single sample — peaks equal the observed values
 		peakCPU = last.CPU.Total.Usage
+		peakTemp = last.CPU.Temperature
 		for _, dev := range last.Disks.Devices {
 			if dev.Utilization > peakDiskUtil {
 				peakDiskUtil = dev.Utilization
@@ -448,6 +452,7 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 		Duration:     dur,
 		Data:         &avg,
 		PeakCPU:      &peakCPU,
+		PeakTemp:     &peakTemp,
 		PeakDiskUtil: &peakDiskUtil,
 		PeakRxMbps:   &peakRx,
 		PeakTxMbps:   &peakTx,
@@ -487,10 +492,13 @@ func (s *Store) aggregateAggregated(samples []*AggregatedSample, dur time.Durati
 		return result
 	}
 
-	var peakCPU, peakDiskUtil, peakRx, peakTx float64
+	var peakCPU, peakTemp, peakDiskUtil, peakRx, peakTx float64
 	for _, s := range samples {
 		if s.PeakCPU != nil && *s.PeakCPU > peakCPU {
 			peakCPU = *s.PeakCPU
+		}
+		if s.PeakTemp != nil && *s.PeakTemp > peakTemp {
+			peakTemp = *s.PeakTemp
 		}
 		if s.PeakDiskUtil != nil && *s.PeakDiskUtil > peakDiskUtil {
 			peakDiskUtil = *s.PeakDiskUtil
@@ -503,6 +511,7 @@ func (s *Store) aggregateAggregated(samples []*AggregatedSample, dur time.Durati
 		}
 	}
 	result.PeakCPU = &peakCPU
+	result.PeakTemp = &peakTemp
 	result.PeakDiskUtil = &peakDiskUtil
 	result.PeakRxMbps = &peakRx
 	result.PeakTxMbps = &peakTx
