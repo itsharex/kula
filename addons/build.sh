@@ -27,6 +27,15 @@ if [[ "$ARG" == "--help" || "$ARG" == "-h" || "$ARG" == "help" ]]; then
     exit 0
 fi
 
+VERSION_FILE="VERSION"
+
+if [ -f "${VERSION_FILE}" ]; then
+    VERSION="$(head -1 "${VERSION_FILE}" | tr -d '[:space:]')"
+else
+    echo "Error: VERSION file not found"
+    exit 1
+fi
+
 # Cross-compile for different architectures
 
 if [ "$ARG" == "cross" ] || [ "$ARG" == "all" ]; then
@@ -35,13 +44,12 @@ if [ "$ARG" == "cross" ] || [ "$ARG" == "all" ]; then
         # split string by / into os and arch
         os=$(echo "$arch" | cut -d'/' -f1)
         arch=$(echo "$arch" | cut -d'/' -f2)
-        version=$(cat VERSION)
         echo "Building for $os/$arch..."
         CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build \
             -trimpath \
             -ldflags="-s -w" \
             -buildvcs=false \
-            -o "dist/kula-$os-$version-$arch" \
+            -o "dist/kula-$os-$VERSION-$arch" \
             ./cmd/kula/
     done
 else

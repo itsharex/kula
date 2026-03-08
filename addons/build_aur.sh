@@ -10,8 +10,8 @@ VERSION_FILE="${PROJECT_ROOT}/VERSION"
 if [ -f "${VERSION_FILE}" ]; then
     VERSION="$(head -1 "${VERSION_FILE}" | tr -d '[:space:]')"
 else
-    VERSION="0.5.0"
-    echo "Warning: VERSION file not found, using default ${VERSION}"
+    echo "Error: VERSION file not found"
+    exit 1
 fi
 
 PKG_NAME="kula"
@@ -20,7 +20,7 @@ AUR_DIR="dist/aur"
 # Choose between local and remote installation
 echo "Select installation source:"
 echo "  1) Local build (from current source checkout)"
-echo "  2) Remote (GitHub release tarball) - NOT IMPLEMENTED YET"
+echo "  2) Remote (GitHub release tarball)"
 read -rp "Choice [1]: " SOURCE_CHOICE
 SOURCE_CHOICE="${SOURCE_CHOICE:-1}"
 
@@ -32,24 +32,28 @@ mkdir -p "${AUR_DIR}"
 if [ "${SOURCE_CHOICE}" = "2" ]; then
     GITHUB_URL="https://github.com/c0m4r/kula"
     cat << EOF > "${AUR_DIR}/PKGBUILD"
-# Maintainer: c0m4r
+# Maintainer: c0m4r <https://github.com/c0m4r
 pkgname=${PKG_NAME}
 pkgver=${VERSION}
 pkgrel=1
-pkgdesc="Lightweight system monitoring daemon."
-arch=('x86_64' 'aarch64' 'riscv64')
+pkgdesc="Lightweight, self-contained monitoring tool"
+arch=('x86_64')
 url="${GITHUB_URL}"
-license=('AGPL-3.0-or-later')
+license=('AGPL-3.0')
 depends=('glibc')
 makedepends=('go')
-source=("\${pkgname}-\${pkgver}.tar.gz::${GITHUB_URL}/archive/v\${pkgver}.tar.gz")
-sha256sums=('SKIP')
+source=("\${pkgname}-\${pkgver}.tar.gz::${GITHUB_URL}/archive/\${pkgver}.tar.gz")
+sha256sums=('899a1ae2534016f2b5ddac399f0acdc3b3f29e05fac302fb2e5a0d2f2aa2fcf1')
 install='kula.install'
 
 build() {
   cd "\${pkgname}-\${pkgver}"
   export CGO_ENABLED=0
-  go build -o kula ./cmd/kula/
+  go build \
+    -trimpath \
+    -ldflags="-s -w" \
+    -buildvcs=false \
+    -o kula ./cmd/kula/
 }
 
 package() {
@@ -62,16 +66,23 @@ package() {
   install -Dm644 addons/init/systemd/kula.service "\$pkgdir/usr/lib/systemd/system/kula.service"
 
   # Install example config
-  install -Dm644 config.example.yaml "\$pkgdir/etc/kula/config.example.yaml"
+  install -Dm640 config.example.yaml "\$pkgdir/etc/kula/config.example.yaml"
 
   # Create data directory
-  install -dm755 "\$pkgdir/var/lib/kula"
+  install -dm750 "\$pkgdir/var/lib/kula"
 
   # Install bash completion
   install -Dm644 addons/bash-completion/kula "\$pkgdir/usr/share/bash-completion/completions/kula"
 
+  # Create man directory
+  install -dm755 "\$pkgdir/usr/share/man/man1"
+
   # Install man page
-  install -Dm644 addons/man/kula.1 "\$pkgdir/usr/share/man/man1/kula.1"
+  if [ -f "addons/man/kula.1" ]; then
+      install -Dm644 addons/man/kula.1 "\$pkgdir/usr/share/man/man1/kula.1"
+  else
+      install -Dm644 addons/kula.1 "\$pkgdir/usr/share/man/man1/kula.1"
+  fi
 
   # Install documentation
   for f in CHANGELOG VERSION README.md SECURITY.md LICENSE config.example.yaml; do
@@ -83,14 +94,14 @@ package() {
 EOF
 else
     cat << 'EOF' > "${AUR_DIR}/PKGBUILD"
-# Maintainer: c0m4r
+# Maintainer: c0m4r <https://github.com/c0m4r>
 pkgname=kula
 pkgver=VERSION_PLACEHOLDER
 pkgrel=1
-pkgdesc="Lightweight system monitoring daemon."
-arch=('x86_64' 'aarch64' 'riscv64')
+pkgdesc="Lightweight, self-contained monitoring tool"
+arch=('x86_64')
 url="https://github.com/c0m4r/kula"
-license=('AGPL-3.0-or-later')
+license=('AGPL-3.0')
 depends=('glibc')
 makedepends=('go')
 # Local build from source checkout
@@ -101,7 +112,11 @@ install='kula.install'
 build() {
   cd "$srcdir/../../.." # Go back to repo root from srcdir
   export CGO_ENABLED=0
-  go build -o kula ./cmd/kula/
+  go build \
+    -trimpath \
+    -ldflags="-s -w" \
+    -buildvcs=false \
+    -o kula ./cmd/kula/
 }
 
 package() {
@@ -114,16 +129,23 @@ package() {
   install -Dm644 addons/init/systemd/kula.service "$pkgdir/usr/lib/systemd/system/kula.service"
 
   # Install example config
-  install -Dm644 config.example.yaml "$pkgdir/etc/kula/config.example.yaml"
+  install -Dm640 config.example.yaml "$pkgdir/etc/kula/config.example.yaml"
   
   # Create data directory
-  install -dm755 "$pkgdir/var/lib/kula"
+  install -dm750 "$pkgdir/var/lib/kula"
   
   # Install bash completion
   install -Dm644 addons/bash-completion/kula "$pkgdir/usr/share/bash-completion/completions/kula"
 
+  # Create man directory
+  install -dm755 "\$pkgdir/usr/share/man/man1"
+
   # Install man page
-  install -Dm644 addons/man/kula.1 "$pkgdir/usr/share/man/man1/kula.1"
+  if [ -f "addons/man/kula.1" ]; then
+      install -Dm644 addons/man/kula.1 "$pkgdir/usr/share/man/man1/kula.1"
+  else
+      install -Dm644 addons/kula.1 "$pkgdir/usr/share/man/man1/kula.1"
+  fi
 
   # Install documentation
   for f in CHANGELOG VERSION README.md SECURITY.md LICENSE config.example.yaml; do
@@ -146,25 +168,23 @@ post_install() {
 
     # Create kula user if it doesn't exist
     if ! getent passwd kula >/dev/null; then
-        useradd --system -g kula -d /var/lib/kula -s /bin/false -c "Kula System Monitoring Daemon" kula
+        useradd --system -g kula -d /var/lib/kula -s /bin/false -c "Kula monitoring tool" kula
     fi
 
     # Set ownership for directories the program will use
     chown -R kula:kula /etc/kula
     chown -R kula:kula /var/lib/kula
 
-    # Load systemd, enable and start service
+    # Reload systemd
     if command -v systemctl >/dev/null; then
         systemctl daemon-reload || true
-        systemctl enable kula.service || true
-        systemctl start kula.service || true
     fi
 
     echo "Kula installed successfully!"
     echo "Default configuration is at /etc/kula/config.example.yaml"
     echo "To get started:"
     echo "  cp /etc/kula/config.example.yaml /etc/kula/config.yaml"
-    echo "  kula serve"
+    echo "  systemctl enable --now kula.service"
 }
 
 post_upgrade() {

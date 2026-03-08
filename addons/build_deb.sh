@@ -41,8 +41,8 @@ VERSION_FILE="${PROJECT_ROOT}/VERSION"
 if [ -f "${VERSION_FILE}" ]; then
     VERSION="$(head -1 "${VERSION_FILE}" | tr -d '[:space:]')"
 else
-    VERSION="0.5.0"
-    echo "Warning: VERSION file not found, using default ${VERSION}"
+    echo "Error: VERSION file not found"
+    exit 1
 fi
 
 # Configuration
