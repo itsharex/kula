@@ -119,7 +119,7 @@ docker run -d --name kula --pid host --network host -v /proc:/proc:ro -v kula_da
 docker run --rm -it --name kula --pid host --network host -v /proc:/proc:ro c0m4r/kula:latest
 ```
 
-### Debian/Ubuntu
+### Debian / Ubuntu
 
 ```bash
 wget https://github.com/c0m4r/kula/releases/download/0.7.2/kula-0.7.2-amd64.deb
@@ -128,7 +128,7 @@ sudo dpkg -i kula-0.7.2-amd64.deb
 systemctl status kula
 ```
 
-### Arch/Manjaro (AUR)
+### Arch / Manjaro (AUR)
 
 ```bash
 wget https://github.com/c0m4r/kula/releases/download/0.7.2/kula-0.7.2-aur.tar.gz
@@ -254,11 +254,18 @@ bash addons/build_deb.sh
 ls -1 dist/kula_*.deb
 ```
 
-### Arch Linux (AUR)
+### Arch Linux / Manjaro (AUR)
 
 ```bash
 bash addons/build_aur.sh
 cd dist/aur && makepkg -si
+```
+
+### Red Hat / Fedora / Rocky Linux / AlmaLinux (.rpm)
+
+```bash
+bash addons/build_rpm.sh
+ls -1 dist/kula_*.rpm
 ```
 
 ### Docker
