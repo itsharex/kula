@@ -2,12 +2,14 @@ package storage
 
 import (
 	"fmt"
-	"kula-szpiegula/internal/collector"
-	"kula-szpiegula/internal/config"
+	"math"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
+
+	"kula-szpiegula/internal/collector"
+	"kula-szpiegula/internal/config"
 )
 
 func fmtRes(d time.Duration) string {
@@ -526,6 +528,10 @@ func maxU(a, b uint64) uint64 {
 	return b
 }
 
+func roundF(v float64) float64 {
+	return math.Round(v*100) / 100
+}
+
 func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration) *AggregatedSample {
 	if len(samples) == 0 {
 		return nil
@@ -563,15 +569,15 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 		}
 
 		fLen := float64(len(samples))
-		avg.CPU.Total.Usage = totalCPUUsage / fLen
-		avg.CPU.Total.User = totalCPUUser / fLen
-		avg.CPU.Total.System = totalCPUSys / fLen
-		avg.CPU.Total.IOWait = totalCPUIowait / fLen
-		avg.CPU.Total.Steal = totalCPUSteal / fLen
+		avg.CPU.Total.Usage = roundF(totalCPUUsage / fLen)
+		avg.CPU.Total.User = roundF(totalCPUUser / fLen)
+		avg.CPU.Total.System = roundF(totalCPUSys / fLen)
+		avg.CPU.Total.IOWait = roundF(totalCPUIowait / fLen)
+		avg.CPU.Total.Steal = roundF(totalCPUSteal / fLen)
 
-		avg.LoadAvg.Load1 = totalLoad1 / fLen
-		avg.LoadAvg.Load5 = totalLoad5 / fLen
-		avg.LoadAvg.Load15 = totalLoad15 / fLen
+		avg.LoadAvg.Load1 = roundF(totalLoad1 / fLen)
+		avg.LoadAvg.Load5 = roundF(totalLoad5 / fLen)
+		avg.LoadAvg.Load15 = roundF(totalLoad15 / fLen)
 
 		// Average CPU Temperature Sensors
 		for i := range avg.CPU.Sensors {
@@ -586,7 +592,7 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 				}
 			}
 			if count > 0 {
-				avg.CPU.Sensors[i].Value = tempSum / float64(count)
+				avg.CPU.Sensors[i].Value = roundF(tempSum / float64(count))
 			}
 		}
 
@@ -606,10 +612,10 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 				}
 			}
 			if count > 0 {
-				avg.Network.Interfaces[i].RxMbps = rxSum / float64(count)
-				avg.Network.Interfaces[i].TxMbps = txSum / float64(count)
-				avg.Network.Interfaces[i].RxPPS = rxPpsSum / float64(count)
-				avg.Network.Interfaces[i].TxPPS = txPpsSum / float64(count)
+				avg.Network.Interfaces[i].RxMbps = roundF(rxSum / float64(count))
+				avg.Network.Interfaces[i].TxMbps = roundF(txSum / float64(count))
+				avg.Network.Interfaces[i].RxPPS = roundF(rxPpsSum / float64(count))
+				avg.Network.Interfaces[i].TxPPS = roundF(txPpsSum / float64(count))
 			}
 		}
 
@@ -629,10 +635,10 @@ func (s *Store) aggregateSamples(samples []*collector.Sample, dur time.Duration)
 				}
 			}
 			if count > 0 {
-				avg.Disks.Devices[i].ReadBytesPS = rBpsSum / float64(count)
-				avg.Disks.Devices[i].WriteBytesPS = wBpsSum / float64(count)
-				avg.Disks.Devices[i].ReadsPerSec = rIopsSum / float64(count)
-				avg.Disks.Devices[i].WritesPerSec = wIopsSum / float64(count)
+				avg.Disks.Devices[i].ReadBytesPS = roundF(rBpsSum / float64(count))
+				avg.Disks.Devices[i].WriteBytesPS = roundF(wBpsSum / float64(count))
+				avg.Disks.Devices[i].ReadsPerSec = roundF(rIopsSum / float64(count))
+				avg.Disks.Devices[i].WritesPerSec = roundF(wIopsSum / float64(count))
 			}
 		}
 	} else {

@@ -13,6 +13,10 @@ Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security
 
 - Metrics aggregation (Avg/Min/Max)
 
+### Changed
+
+- Storage optimization: Round values to 2 decimal points
+
 ## [0.7.4] - 2026-03-09
 
 ### Added

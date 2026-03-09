@@ -122,9 +122,9 @@ func main() {
 				NumCores: 4,
 			},
 			LoadAvg: collector.LoadAvg{
-				Load1:   cpuBase / 20.0,
-				Load5:   cpuBase / 25.0,
-				Load15:  cpuBase / 30.0,
+				Load1:   round2(cpuBase / 20.0),
+				Load5:   round2(cpuBase / 25.0),
+				Load15:  round2(cpuBase / 30.0),
 				Running: 1 + int(cpuBase/25),
 				Total:   120,
 			},
@@ -136,13 +136,13 @@ func main() {
 				Cached:      memCached,
 				Buffers:     memBuffers,
 				Shmem:       memTotal / 50, // ~2% of RAM as shared mem
-				UsedPercent: float64(memUsed) / float64(memTotal) * 100,
+				UsedPercent: round2(float64(memUsed) / float64(memTotal) * 100),
 			},
 			Swap: collector.SwapStats{
 				Total:       swapTotal,
 				Used:        swapUsed,
 				Free:        swapTotal - swapUsed,
-				UsedPercent: float64(swapUsed) / float64(swapTotal) * 100,
+				UsedPercent: round2(float64(swapUsed) / float64(swapTotal) * 100),
 			},
 			Network: collector.NetworkStats{
 				Interfaces: []collector.NetInterface{
@@ -173,15 +173,15 @@ func main() {
 						Name:         "sda",
 						ReadsPerSec:  round2(diskUtil[0] * 10),
 						WritesPerSec: round2(diskUtil[0] * 5),
-						ReadBytesPS:  diskReadBps[0],
-						WriteBytesPS: diskWriteBps[0],
+						ReadBytesPS:  round2(diskReadBps[0]),
+						WriteBytesPS: round2(diskWriteBps[0]),
 					},
 					{
 						Name:         "sdb",
 						ReadsPerSec:  round2(diskUtil[1] * 10),
 						WritesPerSec: round2(diskUtil[1] * 5),
-						ReadBytesPS:  diskReadBps[1],
-						WriteBytesPS: diskWriteBps[1],
+						ReadBytesPS:  round2(diskReadBps[1]),
+						WriteBytesPS: round2(diskWriteBps[1]),
 					},
 				},
 				FileSystems: []collector.FileSystemInfo{
