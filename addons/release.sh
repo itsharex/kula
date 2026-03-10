@@ -18,6 +18,7 @@ cd "../dist"
 for f in kula-linux-* ; do
     mkdir -p kula
     cp "$f" kula/kula
+    cp ../CHANGELOG.md kula/
     cp ../VERSION kula/
     cp ../LICENSE kula/
     cp ../README.md kula/
