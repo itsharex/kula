@@ -690,11 +690,14 @@
                     localStorage.setItem('kula_sel_net', state.selectedNet);
                 }
 
-                let html = '';
-                ifaces.forEach(i => html += `<option value="${i}">${i}</option>`);
-
                 if (selNet) {
-                    selNet.innerHTML = html;
+                    selNet.innerHTML = '';
+                    ifaces.forEach(i => {
+                        const opt = document.createElement('option');
+                        opt.value = i;
+                        opt.textContent = i;
+                        selNet.appendChild(opt);
+                    });
                     selNet.value = state.selectedNet;
                     selNet.classList.remove('hidden');
                     selNet.onchange = (e) => {
@@ -706,7 +709,13 @@
                 }
 
                 if (selPps) {
-                    selPps.innerHTML = html;
+                    selPps.innerHTML = '';
+                    ifaces.forEach(i => {
+                        const opt = document.createElement('option');
+                        opt.value = i;
+                        opt.textContent = i;
+                        selPps.appendChild(opt);
+                    });
                     selPps.value = state.selectedNet;
                     selPps.classList.remove('hidden');
                     selPps.onchange = (e) => {
@@ -729,9 +738,13 @@
                         state.selectedDiskIo = devs[0] || '';
                         localStorage.setItem('kula_sel_diskio', state.selectedDiskIo);
                     }
-                    let html = '';
-                    devs.forEach(d => html += `<option value="${d}">${d}</option>`);
-                    sel.innerHTML = html;
+                    sel.innerHTML = '';
+                    devs.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d;
+                        opt.textContent = d;
+                        sel.appendChild(opt);
+                    });
                     sel.value = state.selectedDiskIo;
                     sel.classList.remove('hidden');
                     sel.onchange = (e) => {
@@ -753,9 +766,13 @@
                         state.selectedDiskSpace = mounts.includes('/') ? '/' : (mounts[0] || '');
                         localStorage.setItem('kula_sel_diskspace', state.selectedDiskSpace);
                     }
-                    let html = '';
-                    mounts.forEach(m => html += `<option value="${m}">${m}</option>`);
-                    sel.innerHTML = html;
+                    sel.innerHTML = '';
+                    mounts.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        opt.textContent = m;
+                        sel.appendChild(opt);
+                    });
                     sel.value = state.selectedDiskSpace;
                     sel.classList.remove('hidden');
                     sel.onchange = (e) => {
