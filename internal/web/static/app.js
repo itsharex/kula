@@ -42,6 +42,7 @@
         cpuTempSensorNames: [], // sensor names matching cpu temp chart datasets
         currentAggregation: localStorage.getItem('kula_aggregation') || 'avg',
         configMax: {}, // loaded from server /api/config
+        lastHistoricalTs: null,
     };
 
     function getChartMaxBound(id) {
@@ -754,6 +755,7 @@
                     const lastSample = data[data.length - 1];
                     const s = lastSample.data || lastSample;
                     state.lastSample = s;
+                    state.lastHistoricalTs = new Date(s.ts || lastSample.ts);
                     updateGauges(s);
                     updateHeader(s);
                     updateSubtitles(s);
@@ -1080,7 +1082,11 @@
         if (state.liveQueue.length === 0) return;
         const queue = state.liveQueue;
         state.liveQueue = [];
-        queue.forEach(sample => pushLiveSample(sample));
+        queue.forEach(sample => {
+            // Skip samples whose timestamp was already covered by the history load
+            if (state.lastHistoricalTs && new Date(sample.ts) <= state.lastHistoricalTs) return;
+            pushLiveSample(sample);
+        });
     }
 
     function scheduleReconnect() {
@@ -1259,6 +1265,7 @@
                 const lastItem = data[data.length - 1];
                 const s = lastItem.data || lastItem;
                 state.lastSample = s;
+                state.lastHistoricalTs = new Date(s.ts || lastItem.ts);
                 updateGauges(s);
                 updateHeader(s);
                 updateSubtitles(s);
@@ -1316,6 +1323,7 @@
                     const lastItem = data[data.length - 1];
                     const s = lastItem.data || lastItem;
                     state.lastSample = s;
+                    state.lastHistoricalTs = new Date(s.ts || lastItem.ts);
                     updateGauges(s);
                     updateHeader(s);
                     updateSubtitles(s);

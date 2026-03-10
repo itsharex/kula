@@ -20,6 +20,8 @@ Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security
 ### Fixed
 
 - Fix double-counting of Disk I/O from logical volumes (LVM, dm-crypt, mdraid)
+- Fix non-monotonic timestamps causing spikes in dashboard after history load
+- Fix inaccurate aggregation durations by using actual sample collection jitter instead of hardcoded 1s
 
 ## [0.7.5] - 2026-03-10
 

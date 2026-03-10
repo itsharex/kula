@@ -160,9 +160,17 @@ func (s *Store) WriteSample(sample *collector.Sample) error {
 	defer s.mu.Unlock()
 
 	// Write to tier 1 (1-second)
+	dur := time.Second
+	if s.latestCache != nil {
+		dur = sample.Timestamp.Sub(s.latestCache.Timestamp)
+		if dur <= 0 {
+			dur = time.Second // Fallback for out-of-order or duplicate samples
+		}
+	}
+
 	as := &AggregatedSample{
 		Timestamp: sample.Timestamp,
-		Duration:  time.Second,
+		Duration:  dur,
 		Data:      sample,
 	}
 
