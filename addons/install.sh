@@ -69,6 +69,10 @@ if [ -f /etc/os-release ]; then
         OS_FAMILY="arch"
     elif [[ "$OS_ID" == "fedora" || "$OS_ID" == "rhel" || "$OS_ID" == "rocky" || "$OS_ID" == "alma" || "$OS_LIKE" == *"fedora"* || "$OS_LIKE" == *"rhel"* ]]; then
         OS_FAMILY="rpm"
+    elif [[ "$OS_ID" == "alpine" ]]; then
+        OS_FAMILY="alpine"
+    elif [[ "$OS_ID" == "void" ]]; then
+        OS_FAMILY="void"
     fi
 fi
 echo -e "Detected OS Family: ${GREEN}${OS_FAMILY}${NC}"
@@ -144,6 +148,10 @@ elif [ "$OS_FAMILY" == "rpm" ]; then
     INSTALL_METHOD="rpm"
 elif [ "$OS_FAMILY" == "arch" ] && command -v pacman >/dev/null; then
     INSTALL_METHOD="aur"
+elif [ "$OS_FAMILY" == "alpine" ]; then
+    INSTALL_METHOD="alpine"
+elif [ "$OS_FAMILY" == "void" ]; then
+    INSTALL_METHOD="void"
 else
     # Fallback options
     if [ "$INIT_SYSTEM" == "systemd" ]; then
@@ -260,6 +268,75 @@ elif [ "$INSTALL_METHOD" == "tarball_systemd" ]; then
     rm -f "$target"
     echo -e "${GREEN}Installation successful!${NC}"
     
+elif [ "$INSTALL_METHOD" == "alpine" ]; then
+    filename="kula-${KULA_VERSION}-${HOST_ARCH}.tar.gz"
+    target=$(download_and_verify "$filename")
+    
+    echo -e "${BLUE}Installing on Alpine Linux...${NC}"
+    extract_dir="$SECURE_TMP/kula_extract"
+    mkdir -p "$extract_dir"
+    tar -xzf "$target" -C "$extract_dir"
+    
+    cd "$extract_dir/kula"
+    
+    if ! getent group kula >/dev/null 2>&1; then
+        exec_as_root addgroup kula
+    fi
+    if ! getent passwd kula >/dev/null 2>&1; then
+        exec_as_root adduser -S -D -H -h /var/lib/kula -s /sbin/nologin -G kula -g "Kula Monitoring Daemon" kula
+    fi
+    
+    exec_as_root install -Dm755 kula /usr/bin/kula
+    exec_as_root install -Dm755 addons/init/openrc/kula /etc/init.d/kula
+    exec_as_root install -Dm640 config.example.yaml /etc/kula/config.example.yaml
+    exec_as_root install -dm750 /var/lib/kula
+    exec_as_root chown -R kula:kula /etc/kula /var/lib/kula
+
+    echo -e "${BLUE}Enabling and starting service...${NC}"
+    exec_as_root rc-update add kula default
+    exec_as_root rc-service kula start
+    
+    cd - >/dev/null
+    rm -f "$target"
+    echo -e "${GREEN}Installation successful!${NC}"
+
+elif [ "$INSTALL_METHOD" == "void" ]; then
+    filename="kula-${KULA_VERSION}-${HOST_ARCH}.tar.gz"
+    target=$(download_and_verify "$filename")
+    
+    echo -e "${BLUE}Installing on Void Linux...${NC}"
+    extract_dir="$SECURE_TMP/kula_extract"
+    mkdir -p "$extract_dir"
+    tar -xzf "$target" -C "$extract_dir"
+    
+    cd "$extract_dir/kula"
+    
+    if ! getent group kula >/dev/null 2>&1; then
+        exec_as_root groupadd --system kula
+    fi
+    if ! getent passwd kula >/dev/null 2>&1; then
+        exec_as_root useradd --system -g kula -d /var/lib/kula -s /bin/false -c "Kula Monitoring Daemon" kula
+    fi
+    
+    exec_as_root install -Dm755 kula /usr/bin/kula
+    exec_as_root install -Dm640 config.example.yaml /etc/kula/config.example.yaml
+    exec_as_root install -dm750 /var/lib/kula
+    exec_as_root chown -R kula:kula /etc/kula /var/lib/kula
+
+    exec_as_root cp -r addons/init/runit/kula /etc/sv/
+    exec_as_root chmod +x /etc/sv/kula/run
+    if [ -f /etc/sv/kula/log/run ]; then
+        exec_as_root chmod +x /etc/sv/kula/log/run
+    fi
+    
+    echo -e "${BLUE}Enabling and starting service...${NC}"
+    exec_as_root ln -sf /etc/sv/kula /var/service/
+    exec_as_root sv up kula || echo -e "${YELLOW}Notice: Could not start service 'kula'. You might need to start it manually.${NC}"
+    
+    cd - >/dev/null
+    rm -f "$target"
+    echo -e "${GREEN}Installation successful!${NC}"
+
 elif [ "$INSTALL_METHOD" == "docker" ]; then
     echo -e "${BLUE}Docker is installed. You can run Kula via Docker container.${NC}"
     echo -e "Run the following command to start Kula:"

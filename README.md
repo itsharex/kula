@@ -119,7 +119,7 @@ Check [Releases](https://github.com/c0m4r/kula/releases) for **ARM** and **RISC-
 ```bash
 KULA_INSTALL=$(mktemp)
 curl -o ${KULA_INSTALL} -fsSL https://kula.ovh/install
-echo "411f4ab2f4023b23d31545ef4f647a3720dbd9c7660dd3ab959f93d5414c29ca ${KULA_INSTALL}" | sha256sum -c || rm -f ${KULA_INSTALL}
+echo "f0c064b20d23c948a4569a35cfe65589a36a497aa0d9037413c6e452471355dd ${KULA_INSTALL}" | sha256sum -c || rm -f ${KULA_INSTALL}
 bash ${KULA_INSTALL}
 rm -f ${KULA_INSTALL}
 ```
