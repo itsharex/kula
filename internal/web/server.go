@@ -202,7 +202,12 @@ func (s *Server) Start() error {
 		handler = gzipMiddleware(handler)
 	}
 
-	s.httpSrv = &http.Server{Handler: handler}
+	s.httpSrv = &http.Server{
+		Handler:      handler,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 60 * time.Second, // allow longer for /api/history large payloads
+		IdleTimeout:  120 * time.Second,
+	}
 
 	listeners, err := s.createListeners()
 	if err != nil {
