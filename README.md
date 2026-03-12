@@ -250,7 +250,7 @@ bash ./addons/check.sh
 # Build dev (Binary size: ~14MB)
 CGO_ENABLED=0 go build -o kula ./cmd/kula/
 
-# Build prod (Binary size: ~9MB)
+# Build prod (Binary size: ~9MB, xz: ~3MB)
 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -buildvcs=false -o kula ./cmd/kula/
 ```
 
