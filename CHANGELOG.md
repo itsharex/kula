@@ -12,6 +12,7 @@ Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security
 ### Added
 
 - Add missing HTTP Server Timeouts
+- Support for env vars KULA_LISTEN and KULA_PORT
 
 ### Changed
 

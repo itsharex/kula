@@ -138,3 +138,24 @@ func TestLoadInvalidYAML(t *testing.T) {
 		t.Error("Load() with invalid YAML should return error")
 	}
 }
+
+func TestLoadEnvOverrides(t *testing.T) {
+	os.Setenv("KULA_LISTEN", "10.0.0.1")
+	os.Setenv("KULA_PORT", "1234")
+	defer func() {
+		os.Unsetenv("KULA_LISTEN")
+		os.Unsetenv("KULA_PORT")
+	}()
+
+	cfg, err := Load("/nonexistent/path/config.yaml")
+	if err != nil {
+		t.Fatalf("Load() error: %v", err)
+	}
+
+	if cfg.Web.Listen != "10.0.0.1" {
+		t.Errorf("Web.Listen = %q, want 10.0.0.1", cfg.Web.Listen)
+	}
+	if cfg.Web.Port != 1234 {
+		t.Errorf("Web.Port = %d, want 1234", cfg.Web.Port)
+	}
+}

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -158,21 +159,24 @@ func Load(path string) (*Config, error) {
 	cfg := DefaultConfig()
 
 	data, err := os.ReadFile(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			if err := checkStorageDirectory(cfg); err != nil {
-				return nil, err
-			}
-			if err := cfg.parseMaxBytes(); err != nil {
-				return nil, err
-			}
-			return cfg, nil
+	if err == nil {
+		if err := yaml.Unmarshal(data, cfg); err != nil {
+			return nil, fmt.Errorf("parsing config: %w", err)
 		}
+	} else if !os.IsNotExist(err) {
 		return nil, fmt.Errorf("reading config: %w", err)
 	}
 
-	if err := yaml.Unmarshal(data, cfg); err != nil {
-		return nil, fmt.Errorf("parsing config: %w", err)
+	// Override with environment variables
+	if listen := os.Getenv("KULA_LISTEN"); listen != "" {
+		cfg.Web.Listen = listen
+	}
+	if portStr := os.Getenv("KULA_PORT"); portStr != "" {
+		if port, err := strconv.Atoi(portStr); err == nil {
+			cfg.Web.Port = port
+		} else {
+			log.Printf("Warning: invalid KULA_PORT %q: %v", portStr, err)
+		}
 	}
 
 	// Expand ~/ shorthand to the user's home directory

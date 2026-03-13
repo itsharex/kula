@@ -199,6 +199,14 @@ Starting Kula is as simple as running:
 
 Dashbord will be available at: http://localhost:27960 (or :8080 if you're using earlier versions)
 
+You can change default port and listen address in [`config.yaml`](config.example.yaml) or using environment variables:
+
+```bash
+export KULA_LISTEN="127.0.0.1"
+export KULA_PORT="27960"
+./kula
+```
+
 ### TUI
 
 ```bash
