@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — 轻量级 Linux 服务器监控",
+  "seo_description": "自包含的 Linux 服务器监控系统。零依赖，单文件，实时仪表板。",
   "nav_features": "特点",
   "nav_preview": "预览",
   "nav_metrics": "指标",

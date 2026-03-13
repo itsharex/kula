@@ -149,6 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = el.getAttribute('data-i18n');
             if (currentTranslations[key]) {
                 el.textContent = currentTranslations[key];
+                // If it's the title tag, also update document.title
+                if (el.tagName === 'TITLE') {
+                    document.title = currentTranslations[key];
+                }
             }
         });
 
@@ -157,6 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = el.getAttribute('data-i18n-html');
             if (currentTranslations[key]) {
                 el.innerHTML = currentTranslations[key];
+            }
+        });
+
+        // Meta description update
+        document.querySelectorAll('[data-i18n-meta]').forEach(el => {
+            const key = el.getAttribute('data-i18n-meta');
+            if (currentTranslations[key]) {
+                el.setAttribute('content', currentTranslations[key]);
             }
         });
     }

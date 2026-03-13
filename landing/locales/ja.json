@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — 軽量なLinuxサーバーモニタリング",
+  "seo_description": "構成不要の独立型Linuxサーバーモニタリング。依存関係なし、単一バイナリ、リアルタイムダッシュボード。",
   "nav_features": "機能",
   "nav_preview": "プレビュー",
   "nav_metrics": "メトリクス",

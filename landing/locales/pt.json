@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — Monitoramento leve de servidores Linux",
+  "seo_description": "Sistema de monitoramento Linux independente. Zero dependências, binário único, painel em tempo real.",
   "nav_features": "Recursos",
   "nav_preview": "Prévia",
   "nav_metrics": "Métricas",

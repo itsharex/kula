@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — Lättviktig Linux-serverövervakning",
+  "seo_description": "Fristående Linux-övervakningssystem. Inga beroenden, en enda binär, instrumentpanel i realtid.",
   "nav_features": "Funktioner",
   "nav_preview": "Förhandsvisning",
   "nav_metrics": "Mätvärden",

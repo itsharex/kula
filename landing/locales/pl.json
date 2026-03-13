@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — Lekki monitoring serwerów Linux",
+  "seo_description": "Samowystarczalny system monitorowania Linux. Zero zależności, pojedynczy plik binarny, panel w czasie rzeczywistym.",
   "nav_features": "Funkcje",
   "nav_preview": "Podgląd",
   "nav_metrics": "Metryki",

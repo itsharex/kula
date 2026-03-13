@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — Lehký monitoring Linux serverů",
+  "seo_description": "Nezávislý systém pro monitoring Linuxu. Nulové závislosti, jediná binárka, dashboard v reálném čase.",
   "nav_features": "Vlastnosti",
   "nav_preview": "Náhled",
   "nav_metrics": "Metriky",

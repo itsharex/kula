@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — 가벼운 Linux 서버 모니터링",
+  "seo_description": "독립형 Linux 서버 모니터링 시스템. 의존성 없음, 단일 바이너리, 실시간 대시보드.",
   "nav_features": "기능",
   "nav_preview": "미리보기",
   "nav_metrics": "메트릭",

@@ -1,4 +1,6 @@
 {
+  "seo_title": "Kula — Lightweight Linux Server Monitoring",
+  "seo_description": "Zero-dependency, self-contained Linux server monitoring. Single binary, real-time dashboard, built-in storage engine. Just deploy and go.",
   "nav_features": "Features",
   "nav_preview": "Preview",
   "nav_metrics": "Metrics",
