@@ -1,5 +1,5 @@
 /* ============================================================
-   Kula Landing Page — Interactive behaviors
+   Kula Landing Page - Interactive behaviors
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -243,6 +243,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function sanitizeHTML(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const allowedTags = ['A', 'BR', 'STRONG', 'B', 'I', 'EM', 'U', 'SUP', 'SUB'];
+        const allowedAttrs = {
+            'A': ['href', 'rel', 'target', 'title']
+        };
+
+        function clean(node) {
+            const children = Array.from(node.childNodes);
+            for (const child of children) {
+                if (child.nodeType === Node.ELEMENT_NODE) {
+                    const tag = child.tagName.toUpperCase();
+                    if (!allowedTags.includes(tag)) {
+                        // Replace unauthorized tag with its text content
+                        const text = document.createTextNode(child.textContent);
+                        node.replaceChild(text, child);
+                    } else {
+                        // Filter attributes
+                        const attrs = Array.from(child.attributes);
+                        const validAttrs = allowedAttrs[tag] || [];
+                        for (const attr of attrs) {
+                            if (!validAttrs.includes(attr.name.toLowerCase())) {
+                                child.removeAttribute(attr.name);
+                            }
+                        }
+
+                        if (tag === 'A') {
+                            const href = child.getAttribute('href');
+                            if (href) {
+                                try {
+                                    const url = new URL(href, document.baseURI);
+                                    if (url.protocol !== 'https:' && url.protocol !== 'http:' && url.protocol !== 'mailto:') {
+                                        child.removeAttribute('href');
+                                    }
+                                } catch {
+                                    // Relative URL - allow it (starts with # or /)
+                                    // if it looks like a protocol bypass attempt, strip it
+                                    if (href.trim().toLowerCase().startsWith('javascript:') || href.trim().toLowerCase().startsWith('data:')) {
+                                        child.removeAttribute('href');
+                                    }
+                                }
+                            }
+                            // Enforce security attributes for target="_blank"
+                            if (child.getAttribute('target') === '_blank') {
+                                child.setAttribute('rel', 'noopener noreferrer');
+                            }
+                        }
+                        clean(child);
+                    }
+                }
+            }
+        }
+
+        clean(doc.body);
+        return doc.body.innerHTML;
+    }
+
     function applyTranslations() {
         // Text translations
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -260,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-i18n-html]').forEach(el => {
             const key = el.getAttribute('data-i18n-html');
             if (currentTranslations[key]) {
-                el.innerHTML = currentTranslations[key];
+                el.innerHTML = sanitizeHTML(currentTranslations[key]);
             }
         });
 
