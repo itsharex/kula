@@ -2302,8 +2302,9 @@
         'card-cpu', 'card-loadavg', 'card-memory', 'card-swap',
         'card-network', 'card-pps', 'card-connections',
         'card-disk-io', 'card-disk-space',
+        'card-gpu-load', 'card-vram',
         'card-processes', 'card-entropy', 'card-self',
-        'card-cpu-temp', 'card-disk-temp'
+        'card-cpu-temp', 'card-disk-temp', 'card-gpu-temp'
     ];
 
     function toggleFocusMode() {
@@ -2314,6 +2315,7 @@
             // Exit focus mode
             state.focusMode = false;
             grids.forEach(g => g.classList.remove('focus-active', 'focus-selecting'));
+            document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-active', 'focus-selecting'));
             btn.classList.remove('focus-active');
             chartCardIds.forEach(id => {
                 const el = document.getElementById(id);
@@ -2338,6 +2340,7 @@
                 state.focusMode = false;
                 state.focusSelecting = false;
                 grids.forEach(g => g.classList.remove('focus-active', 'focus-selecting'));
+                document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-active', 'focus-selecting'));
                 btn.classList.remove('focus-active');
                 removeFocusBar();
                 return;
@@ -2349,6 +2352,10 @@
             grids.forEach(g => {
                 g.classList.remove('focus-selecting');
                 g.classList.add('focus-active');
+            });
+            document.querySelectorAll('.section-title').forEach(t => {
+                t.classList.remove('focus-selecting');
+                t.classList.add('focus-active');
             });
             chartCardIds.forEach(id => {
                 const el = document.getElementById(id);
@@ -2367,6 +2374,10 @@
         grids.forEach(g => {
             g.classList.add('focus-selecting');
             g.classList.remove('focus-active');
+        });
+        document.querySelectorAll('.section-title').forEach(t => {
+            t.classList.add('focus-selecting');
+            t.classList.remove('focus-active');
         });
         btn.classList.add('focus-active');
 
@@ -2407,6 +2418,7 @@
             state.focusSelecting = false;
             state.focusMode = false;
             document.querySelectorAll('.charts-grid').forEach(g => g.classList.remove('focus-selecting'));
+            document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-selecting'));
             document.getElementById('btn-focus').classList.remove('focus-active');
             removeFocusBar();
         });
@@ -2426,6 +2438,7 @@
         if (state.focusVisible && state.focusVisible.length > 0) {
             state.focusMode = true;
             document.querySelectorAll('.charts-grid').forEach(g => g.classList.add('focus-active'));
+            document.querySelectorAll('.section-title').forEach(t => t.classList.add('focus-active'));
             document.getElementById('btn-focus').classList.add('focus-active');
             chartCardIds.forEach(id => {
                 const el = document.getElementById(id);

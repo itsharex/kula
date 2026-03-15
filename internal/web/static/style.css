@@ -840,13 +840,23 @@ body.light-mode .time-input {
 }
 
 .focus-active .chart-card.focus-visible {
-    display: block;
+    display: block !important;
 }
 
 .focus-selecting .chart-card {
     display: block !important;
     cursor: pointer;
     position: relative;
+}
+
+.charts-grid.focus-selecting,
+.charts-grid.focus-active {
+    display: grid !important;
+}
+
+.section-title.focus-selecting,
+.section-title.focus-active {
+    display: block !important;
 }
 
 .focus-selecting .chart-card::after {
