@@ -1,5 +1,7 @@
 <div align="center">
 
+[🇸🇦](https://kula.ovh/?lang=ar) [🇲🇾](https://kula.ovh/?lang=ms) [🇧🇩](https://kula.ovh/?lang=bn) [🇨🇿](https://kula.ovh/?lang=cs) [🇩🇪](https://kula.ovh/?lang=de) [🇪🇸](https://kula.ovh/?lang=es) [🇫🇷](https://kula.ovh/?lang=fr) [🇮🇱](https://kula.ovh/?lang=he) [🇮🇳](https://kula.ovh/?lang=hi) [🇮🇩](https://kula.ovh/?lang=id) [🇮🇹](https://kula.ovh/?lang=it) [🇯🇵](https://kula.ovh/?lang=ja) [🇰🇷](https://kula.ovh/?lang=ko) [🇳🇱](https://kula.ovh/?lang=nl) [🇵🇱](https://kula.ovh/?lang=pl) [🇵🇹](https://kula.ovh/?lang=pt) [🇷🇴](https://kula.ovh/?lang=ro) [🇷🇺](https://kula.ovh/?lang=ru) [🇸🇪](https://kula.ovh/?lang=sv) [🇹🇭](https://kula.ovh/?lang=th) [🇹🇷](https://kula.ovh/?lang=tr) [🇺🇦](https://kula.ovh/?lang=uk) [🇵🇰](https://kula.ovh/?lang=ur) [🇻🇳](https://kula.ovh/?lang=vi) [🇨🇳](https://kula.ovh/?lang=zh)
+
 <img width="128" height="128" alt="image" src="https://github.com/user-attachments/assets/77d5850a-c3a4-47fe-b33e-dcaeeb3c8e4d" />
 
 # K U L A
