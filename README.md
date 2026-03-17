@@ -130,7 +130,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/c0m4r/kula/refs/heads/main
 ```bash
 KULA_INSTALL=$(mktemp)
 curl -o ${KULA_INSTALL} -fsSL https://kula.ovh/install
-echo "f0c064b20d23c948a4569a35cfe65589a36a497aa0d9037413c6e452471355dd ${KULA_INSTALL}" | sha256sum -c || rm -f ${KULA_INSTALL}
+echo "c70f6f070a1f93e278f07f7efb7d662a48bc16f43909df7889d8778430dde1b6 ${KULA_INSTALL}" | sha256sum -c || rm -f ${KULA_INSTALL}
 bash ${KULA_INSTALL}
 rm -f ${KULA_INSTALL}
 ```
