@@ -23,6 +23,7 @@ for f in kula-linux-* ; do
     cp ../LICENSE kula/
     cp ../README.md kula/
     cp ../config.example.yaml kula/
+    cp -r ../scripts kula/
     cp -r ../addons/bash-completion kula/
     cp -r ../addons/init kula/
     cp -r ../addons/man kula/

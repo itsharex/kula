@@ -79,6 +79,10 @@ cp config.example.yaml "${PKG_DIR}/etc/kula/config.example.yaml"
 cp addons/bash-completion/kula "${PKG_DIR}/usr/share/bash-completion/completions/kula"
 cp addons/init/systemd/kula.service "${PKG_DIR}/lib/systemd/system/kula.service"
 
+if [ -d "scripts" ]; then
+    cp -r scripts "${PKG_DIR}/usr/share/kula/"
+fi
+
 for f in CHANGELOG.md VERSION README.md SECURITY.md LICENSE config.example.yaml; do
     if [ -f "$f" ]; then
         cp "$f" "${PKG_DIR}/usr/share/kula/"

@@ -85,6 +85,11 @@ package() {
       install -Dm644 addons/kula.1 "\$pkgdir/usr/share/man/man1/kula.1"
   fi
 
+  # Copy scripts directory
+  if [ -d "scripts" ]; then
+      cp -r scripts "\$pkgdir/usr/share/kula/"
+  fi
+
   # Install documentation
   for f in CHANGELOG.md VERSION README.md SECURITY.md LICENSE config.example.yaml; do
       if [ -f "\$f" ]; then
@@ -147,6 +152,11 @@ package() {
       install -Dm644 addons/man/kula.1 "$pkgdir/usr/share/man/man1/kula.1"
   else
       install -Dm644 addons/kula.1 "$pkgdir/usr/share/man/man1/kula.1"
+  fi
+
+  # Copy scripts directory
+  if [ -d "scripts" ]; then
+      cp -r scripts "$pkgdir/usr/share/kula/"
   fi
 
   # Install documentation

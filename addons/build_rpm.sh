@@ -96,6 +96,10 @@ cp config.example.yaml "${PKG_DIR}/etc/kula/config.example.yaml"
 cp addons/bash-completion/kula "${PKG_DIR}/usr/share/bash-completion/completions/kula"
 cp addons/init/systemd/kula.service "${PKG_DIR}/usr/lib/systemd/system/kula.service"
 
+if [ -d "scripts" ]; then
+    cp -r scripts "${PKG_DIR}/usr/share/kula/"
+fi
+
 for f in CHANGELOG.md VERSION README.md SECURITY.md LICENSE config.example.yaml; do
     if [ -f "$f" ]; then
         cp "$f" "${PKG_DIR}/usr/share/kula/"
@@ -139,6 +143,10 @@ cp ${SCRIPT_DIR}/../dist/kula-linux-${VERSION}-${GOARCH} %{buildroot}/usr/bin/ku
 cp ${SCRIPT_DIR}/../config.example.yaml %{buildroot}/etc/kula/config.example.yaml
 cp ${SCRIPT_DIR}/../addons/bash-completion/kula %{buildroot}/usr/share/bash-completion/completions/kula
 cp ${SCRIPT_DIR}/../addons/init/systemd/kula.service %{buildroot}/usr/lib/systemd/system/kula.service
+
+if [ -d "${SCRIPT_DIR}/../scripts" ]; then
+    cp -r ${SCRIPT_DIR}/../scripts %{buildroot}/usr/share/kula/
+fi
 
 for f in CHANGELOG.md VERSION README.md SECURITY.md LICENSE config.example.yaml; do
     if [ -f "${SCRIPT_DIR}/../\$f" ]; then

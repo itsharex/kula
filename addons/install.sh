@@ -247,9 +247,11 @@ elif [ "$INSTALL_METHOD" == "tarball_systemd" ]; then
     
     cd "$extract_dir/kula"
     exec_as_root install -Dm755 kula /usr/bin/kula
-    exec_as_root install -Dm644 addons/init/systemd/kula.service /etc/systemd/system/kula.service
+    exec_as_root install -Dm644 init/systemd/kula.service /etc/systemd/system/kula.service
     exec_as_root install -Dm640 config.example.yaml /etc/kula/config.example.yaml
     exec_as_root install -dm750 /var/lib/kula
+    exec_as_root install -dm750 /usr/share/kula
+    exec_as_root cp -r CHANGELOG.md README.md LICENSE VERSION config.example.yaml /usr/share/kula/
     
     if ! getent group kula >/dev/null; then
         exec_as_root groupadd --system kula
@@ -291,6 +293,8 @@ elif [ "$INSTALL_METHOD" == "alpine" ]; then
     exec_as_root install -Dm640 config.example.yaml /etc/kula/config.example.yaml
     exec_as_root install -dm750 /var/lib/kula
     exec_as_root chown -R kula:kula /etc/kula /var/lib/kula
+    exec_as_root install -dm750 /usr/share/kula
+    exec_as_root cp -r CHANGELOG.md README.md LICENSE VERSION config.example.yaml /usr/share/kula/
 
     echo -e "${BLUE}Enabling and starting service...${NC}"
     exec_as_root rc-update add kula default
@@ -322,6 +326,8 @@ elif [ "$INSTALL_METHOD" == "void" ]; then
     exec_as_root install -Dm640 config.example.yaml /etc/kula/config.example.yaml
     exec_as_root install -dm750 /var/lib/kula
     exec_as_root chown -R kula:kula /etc/kula /var/lib/kula
+    exec_as_root install -dm750 /usr/share/kula
+    exec_as_root cp -r CHANGELOG.md README.md LICENSE VERSION config.example.yaml /usr/share/kula/
 
     exec_as_root cp -r addons/init/runit/kula /etc/sv/
     exec_as_root chmod +x /etc/sv/kula/run
