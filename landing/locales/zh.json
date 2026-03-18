@@ -48,6 +48,8 @@
   "metric_network_details": "每个接口的吞吐量 (Mbps)、每秒包数、错误、丢包；TCP 统计；套接字数量",
   "metric_disks": "磁盘",
   "metric_disks_details": "每个设备的 I/O (读/写字节/秒, IOPS)；文件系统使用情况",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "负载, 功耗, VRAM",
   "metric_system": "系统",
   "metric_system_details": "运行时间、熵、时钟同步、主机名、在线用户数",
   "metric_processes": "进程",
@@ -55,7 +57,8 @@
   "metric_self": "自身",
   "metric_self_details": "Kula 自身的 CPU%、RSS 内存、打开的文件描述符",
   "metric_thermal": "温度",
-  "metric_thermal_details": "CPU 和磁盘温度",
+  "metric_thermal_details": "CPU、GPU 和硬盘温度",
+  "contact": "联系方式",
   "footer_releases": "版本发布",
   "footer_copy": "基于 <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> 许可 · Linux® 是 Linus Torvalds 的注册商标"
 }

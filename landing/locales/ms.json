@@ -48,6 +48,8 @@
   "metric_network_details": "Throughput setiap antara muka (Mbps), paket/s, ralat, keciciran; statistik TCP; bilangan soket",
   "metric_disks": "Cakera",
   "metric_disks_details": "I/O setiap peranti (baca/tulis bait/s, IOPS); penggunaan sistem fail",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "Sistem",
   "metric_system_details": "Uptime, entropi, sinkronisasi jam, nama hos, bilangan pengguna yang log masuk",
   "metric_processes": "Proses",
@@ -56,6 +58,7 @@
   "metric_self_details": "Penggunaan CPU Kula sendiri, memori RSS, deskriptor fail terbuka",
   "metric_thermal": "Terma",
   "metric_thermal_details": "Suhu CPU dan cakera",
+  "contact": "Contact",
   "footer_releases": "Keluaran",
   "footer_copy": "Dilesenkan di bawah <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® adalah tanda dagangan berdaftar Linus Torvalds"
 }

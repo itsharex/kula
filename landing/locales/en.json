@@ -48,6 +48,8 @@
   "metric_network_details": "Per-interface throughput (Mbps), packets/s, errors, drops; TCP stats; socket counts",
   "metric_disks": "Disks",
   "metric_disks_details": "Per-device I/O (read/write bytes/s, IOPS); filesystem usage",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "System",
   "metric_system_details": "Uptime, entropy, clock sync, hostname, logged-in user count",
   "metric_processes": "Processes",
@@ -55,7 +57,8 @@
   "metric_self": "Self",
   "metric_self_details": "Kula's own CPU%, RSS memory, open file descriptors",
   "metric_thermal": "Thermal",
-  "metric_thermal_details": "CPU and Disk temperatures",
+  "metric_thermal_details": "CPU, GPU and Disk temperatures",
+  "contact": "Contact",
   "footer_releases": "Releases",
   "footer_copy": "Licensed under <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® is the registered trademark of Linus Torvalds"
 }

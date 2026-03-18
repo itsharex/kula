@@ -48,6 +48,8 @@
   "metric_network_details": "인터페이스별 처리량(Mbps), 초당 패킷 수, 오류, 드롭; TCP 통계; 소켓 수",
   "metric_disks": "디스크",
   "metric_disks_details": "장치별 I/O(초당 읽기/쓰기 바이트, IOPS); 파일 시스템 사용량",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "부하, 전력 소비, VRAM",
   "metric_system": "시스템",
   "metric_system_details": "업타임, 엔트로피, 시계 동기화 상태, 호스트 이름, 로그인 사용자 수",
   "metric_processes": "프로세스",
@@ -55,7 +57,8 @@
   "metric_self": "자체 모니터링",
   "metric_self_details": "Kula 자체 CPU 점유율, RSS 메모리, 오픈 파일 디스크립터 수",
   "metric_thermal": "온도",
-  "metric_thermal_details": "CPU 및 디스크 온도",
+  "metric_thermal_details": "CPU, GPU 및 디스크 온도",
+  "contact": "문의하기",
   "footer_releases": "릴리스",
   "footer_copy": "<a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> 라이선스 · Linux®는 Linus Torvalds의 등록 상표입니다."
 }

@@ -48,6 +48,8 @@
   "metric_network_details": "Doorvoer per interface (Mbps), pakketten/s, fouten, drops; TCP-stats; aantal sockets",
   "metric_disks": "Schijven",
   "metric_disks_details": "I/O per apparaat (lezen/schrijven bytes/s, IOPS); bestandssysteemgebruik",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "Systeem",
   "metric_system_details": "Uptime, entropie, kloksynchronisatie, hostnaam, aantal ingelogde gebruikers",
   "metric_processes": "Processen",
@@ -56,6 +58,7 @@
   "metric_self_details": "Kula's eigen CPU%, RSS-geheugen, open file descriptors",
   "metric_thermal": "Thermisch",
   "metric_thermal_details": "CPU- en schijftemperaturen",
+  "contact": "Contact",
   "footer_releases": "Releases",
   "footer_copy": "Gelicentieerd onder <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® is het geregistreerde handelsmerk van Linus Torvalds"
 }

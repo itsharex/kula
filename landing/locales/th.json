@@ -48,6 +48,8 @@
   "metric_network_details": "ปริมาณข้อมูลต่ออินเทอร์เฟซ (Mbps), แพ็กเก็ต/วินาที, ข้อผิดพลาด, ข้อมูลที่หล่น; สถิติ TCP",
   "metric_disks": "ดิสก์",
   "metric_disks_details": "การอ่าน/เขียน (bytes/s, IOPS); การใช้งานระบบไฟล์",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "ระบบ",
   "metric_system_details": "เวลาทำงานต่อเนื่อง, งานที่รอคิว, การซิงค์เวลา, ชื่อโฮสต์, จำนวนผู้ใช้ที่ล็อกอิน",
   "metric_processes": "กระบวนการ",
@@ -56,6 +58,7 @@
   "metric_self_details": "การใช้งาน CPU ของ Kula, หน่วยความจำ RSS, จำนวนไฟล์ที่เปิดอยู่",
   "metric_thermal": "ความร้อน",
   "metric_thermal_details": "อุณหภูมิ CPU และดิสก์",
+  "contact": "Contact",
   "footer_releases": "รุ่นที่ปล่อย",
   "footer_copy": "ภายใต้สัญญาอนุญาต <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® เป็นเครื่องหมายการค้าจดทะเบียนของ Linus Torvalds"
 }

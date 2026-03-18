@@ -48,6 +48,8 @@
   "metric_network_details": "インターフェースごとのスループット (Mbps)、パケット/秒、エラー、ドロップ、TCP 統計、ソケット数",
   "metric_disks": "ディスク",
   "metric_disks_details": "デバイスごとの I/O (読み取り/書き込みバイト/秒、IOPS)、ファイルシステム使用量",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "負荷, 消費電力, VRAM",
   "metric_system": "システム",
   "metric_system_details": "稼働時間、エントロピー、時刻同期、ホスト名、ログインユーザー数",
   "metric_processes": "プロセス",
@@ -55,7 +57,8 @@
   "metric_self": "セルフ",
   "metric_self_details": "Kula 自身の CPU 使用率、RSS メモリ、オープンファイル記述子数",
   "metric_thermal": "温度",
-  "metric_thermal_details": "CPU およびディスク温度",
+  "metric_thermal_details": "CPU、GPUおよびディスクの温度",
+  "contact": "お問い合わせ",
   "footer_releases": "リリース",
   "footer_copy": "ライセンス: <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® は Linus Torvalds の登録商標です"
 }

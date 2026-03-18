@@ -48,6 +48,8 @@
   "metric_network_details": "Przepustowość (Mbps), pakiety/s, błędy, statystyki TCP; liczba socketów",
   "metric_disks": "Dyski",
   "metric_disks_details": "I/O na urządzenie (odczyt/zapis bajtów/s, IOPSy); użycie systemów plików",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Obciążenie, pobór mocy, VRAM",
   "metric_system": "System",
   "metric_system_details": "Uptime, entropia, synchronizacja czasu, hostname, liczba użytkowników",
   "metric_processes": "Procesy",
@@ -55,7 +57,8 @@
   "metric_self": "Self",
   "metric_self_details": "Użycie CPU przez proces Kuli, pamięć RSS, otwarte deskryptory plików",
   "metric_thermal": "Temperatura",
-  "metric_thermal_details": "Temperatury CPU i dysków",
+  "metric_thermal_details": "Temperatury CPU, GPU i dysków",
+  "contact": "Kontakt",
   "footer_releases": "Wersje",
   "footer_copy": "Licencja <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® jest zarejestrowanym znakiem towarowym Linusa Torvaldsa"
 }

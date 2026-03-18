@@ -48,6 +48,8 @@
   "metric_network_details": "Débit par interface (Mbps), paquets/s, erreurs, rejets ; stats TCP ; nombre de sockets",
   "metric_disks": "Disques",
   "metric_disks_details": "E/S par périphérique (octets lus/écrits par seconde, IOPS) ; utilisation du système de fichiers",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Charge, Consommation électrique, VRAM",
   "metric_system": "Système",
   "metric_system_details": "Temps de fonctionnement, entropie, synchro horloge, nom d'hôte, nombre d'utilisateurs connectés",
   "metric_processes": "Processus",
@@ -55,7 +57,8 @@
   "metric_self": "Auto-surveillance",
   "metric_self_details": "Utilisation CPU de Kula, mémoire RSS, descripteurs de fichiers ouverts",
   "metric_thermal": "Thermique",
-  "metric_thermal_details": "Températures du CPU et des disques",
+  "metric_thermal_details": "Températures du CPU, du GPU et des disques",
+  "contact": "Contact",
   "footer_releases": "Versions",
   "footer_copy": "Sous licence <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® est la marque déposée de Linus Torvalds"
 }

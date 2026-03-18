@@ -48,6 +48,8 @@
   "metric_network_details": "Throughput per antarmuka (Mbps), paket/detik, error, drop; statistik TCP; jumlah socket",
   "metric_disks": "Disk",
   "metric_disks_details": "I/O per perangkat (baca/tulis byte/detik, IOPS); penggunaan sistem berkas",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "Sistem",
   "metric_system_details": "Waktu aktif, entropi, sinkronisasi jam, nama host, jumlah pengguna yang login",
   "metric_processes": "Proses",
@@ -55,7 +57,8 @@
   "metric_self": "Diri Sendiri",
   "metric_self_details": "Penggunaan CPU Kula, memori RSS, jumlah deskriptor berkas terbuka",
   "metric_thermal": "Suhu",
-  "metric_thermal_details": "Suhu CPU dan Disk",
+  "metric_thermal_details": "Suhu CPU, GPU dan Disk",
+  "contact": "Contact",
   "footer_releases": "Rilisan",
   "footer_copy": "Berlisensi di bawah <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® adalah merek dagang terdaftar dari Linus Torvalds"
 }

@@ -47,10 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Fetch GitHub Stars ----
     async function fetchStars() {
         const badges = document.querySelectorAll('.github-stars-count');
-        const DEFAULT_STARS = 436;
+        const DEFAULT_STARS = 719;
         const CACHE_KEY = 'kula-stars';
         const TIMESTAMP_KEY = 'kula-stars-time';
-        const ONE_HOUR = 60 * 60 * 1000;
+        const SIX_HOURS = 6 * 60 * 60 * 1000;
 
         const cachedStars = localStorage.getItem(CACHE_KEY);
         const cachedTime = localStorage.getItem(TIMESTAMP_KEY);
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // 1. Check if cached and valid (less than 1 hour old)
-        if (cachedStars && cachedTime && (now - parseInt(cachedTime)) < ONE_HOUR) {
+        if (cachedStars && cachedTime && (now - parseInt(cachedTime)) < SIX_HOURS) {
             updateUI(parseInt(cachedStars));
             return;
         }
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         child.removeAttribute('href');
                                     }
                                 } catch {
-                                        child.removeAttribute('href'); // malformed URL — strip it
+                                    child.removeAttribute('href'); // malformed URL — strip it
                                 }
                             }
                             // Enforce security attributes for target="_blank"

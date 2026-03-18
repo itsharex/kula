@@ -48,6 +48,8 @@
   "metric_network_details": "الإنتاجية لكل واجهة (Mbps)، الحزم/ثانية، الأخطاء، الإسقاط؛ إحصائيات TCP؛ عدد المقابس",
   "metric_disks": "الأقراص",
   "metric_disks_details": "الإدخال/الإخراج لكل جهاز (بايت/ثانية قراءة/كتابة)؛ استخدام أنظمة الملفات",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "النظام",
   "metric_system_details": "وقت التشغيل، العشوائية، تزامن الساعة، اسم المضيف، عدد المستخدمين المسجلين",
   "metric_processes": "العمليات",
@@ -56,6 +58,7 @@
   "metric_self_details": "استخدام المعالج لـ Kula، ذاكرة RSS، واصفات الملفات المفتوحة",
   "metric_thermal": "الحرارة",
   "metric_thermal_details": "درجات حرارة المعالج والأقراص",
+  "contact": "Contact",
   "footer_releases": "الإصدارات",
   "footer_copy": "مرخص بموجب <a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> · Linux® هي علامة تجارية مسجلة لـ Linus Torvalds"
 }

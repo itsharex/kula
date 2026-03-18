@@ -48,6 +48,8 @@
   "metric_network_details": "Arayüz başına bant genişliği (Mbps), paket/sn, hatalar, kayıplar; TCP istatistikleri; soket sayıları",
   "metric_disks": "Diskler",
   "metric_disks_details": "Cihaz başına G/Ç (okuma/yazma bayt/sn, IOPS); dosya sistemi kullanımı",
+  "metric_gpu": "GPU",
+  "metric_gpu_details": "Load, Power consumption, VRAM",
   "metric_system": "Sistem",
   "metric_system_details": "Uptime, entropi, saat senkronizasyonu, ana bilgisayar adı, oturum açmış kullanıcı sayısı",
   "metric_processes": "İşlemler",
@@ -55,7 +57,8 @@
   "metric_self": "Kendi",
   "metric_self_details": "Kula'nın kendi CPU%, RSS belleği, açık dosya tanımlayıcıları",
   "metric_thermal": "Termal",
-  "metric_thermal_details": "CPU ve Disk sıcaklıkları",
+  "metric_thermal_details": "CPU, GPU ve Disk sıcaklıkları",
+  "contact": "Contact",
   "footer_releases": "Sürümler",
   "footer_copy": "<a href=\"https://www.gnu.org/licenses/agpl-3.0\">AGPLv3</a> ile lisanslanmıştır · Linux®, Linus Torvalds'ın tescilli markasıdır"
 }
