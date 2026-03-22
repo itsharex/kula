@@ -20,9 +20,10 @@ function toggleFocusMode() {
     if (state.focusMode && !state.focusSelecting) {
         // Exit focus mode
         state.focusMode = false;
-        grids.forEach(g => g.classList.remove('focus-active', 'focus-selecting'));
-        document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-active', 'focus-selecting'));
+        grids.forEach(g => g.classList.remove('focus-active', 'focus-selecting', 'focus-hidden'));
+        document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-active', 'focus-selecting', 'focus-hidden'));
         btn.classList.remove('focus-active');
+        document.getElementById('gauges-row')?.classList.remove('focus-hidden');
         chartCardIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.remove('focus-visible', 'focus-selected');
@@ -30,6 +31,7 @@ function toggleFocusMode() {
         removeFocusBar();
         localStorage.removeItem('kula_focus_visible');
         state.focusVisible = null;
+        restoreGrids();
         return;
     }
 
@@ -49,20 +51,34 @@ function toggleFocusMode() {
             document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-active', 'focus-selecting'));
             btn.classList.remove('focus-active');
             removeFocusBar();
+            restoreGrids();
             return;
         }
 
         state.focusVisible = selected;
         localStorage.setItem('kula_focus_visible', JSON.stringify(selected));
         state.focusSelecting = false;
+
         grids.forEach(g => {
             g.classList.remove('focus-selecting');
-            g.classList.add('focus-active');
+            const hasVisible = Array.from(g.querySelectorAll('.chart-card')).some(el => {
+                const id = el.id;
+                const isSelected = selected.includes(id);
+                const isHidden = el.classList.contains('hidden');
+                return isSelected && !isHidden;
+            });
+            g.classList.toggle('focus-active', hasVisible);
+            g.classList.toggle('focus-hidden', !hasVisible);
         });
+
         document.querySelectorAll('.section-title').forEach(t => {
             t.classList.remove('focus-selecting');
-            t.classList.add('focus-active');
+            const grid = t.nextElementSibling;
+            const hasVisible = grid?.classList.contains('charts-grid') && grid.classList.contains('focus-active');
+            t.classList.toggle('focus-active', !!hasVisible);
+            t.classList.toggle('focus-hidden', !hasVisible);
         });
+
         chartCardIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -72,6 +88,12 @@ function toggleFocusMode() {
                 el.classList.remove('focus-selected');
             }
         });
+
+        if (localStorage.getItem('kula_focus_hide_gauges') === 'true') {
+            document.getElementById('gauges-row')?.classList.add('focus-hidden');
+        }
+
+        combineGrids();
         removeFocusBar();
         return;
     }
@@ -81,11 +103,11 @@ function toggleFocusMode() {
     state.focusSelecting = true;
     grids.forEach(g => {
         g.classList.add('focus-selecting');
-        g.classList.remove('focus-active');
+        g.classList.remove('focus-active', 'focus-hidden');
     });
     document.querySelectorAll('.section-title').forEach(t => {
         t.classList.add('focus-selecting');
-        t.classList.remove('focus-active');
+        t.classList.remove('focus-active', 'focus-hidden');
     });
     btn.classList.add('focus-active');
 
@@ -118,18 +140,71 @@ function showFocusBar() {
     const bar = document.createElement('div');
     bar.className = 'focus-bar';
     bar.id = 'focus-bar';
-    bar.innerHTML = '<span>Select graphs to display, then click Done</span><button id="btn-focus-done">Done</button><button id="btn-focus-cancel">Cancel</button>';
+    const hideGauges = localStorage.getItem('kula_focus_hide_gauges') === 'true';
+    
+    const spanWrapper = document.createElement('span');
+    const spanText = document.createElement('span');
+    spanText.setAttribute('data-i18n', 'select_graphs');
+    spanText.textContent = 'Select graphs to display, then click Done';
+    spanWrapper.appendChild(spanText);
+
+    const label = document.createElement('label');
+    label.className = 'focus-bar-checkbox';
+    label.style.display = 'flex';
+    label.style.alignItems = 'center';
+    label.style.gap = '0.4rem';
+    label.style.margin = '0 0.5rem';
+    label.style.cursor = 'pointer';
+
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.id = 'focus-hide-gauges-chk';
+    chk.checked = hideGauges;
+
+    const chkSpan = document.createElement('span');
+    chkSpan.setAttribute('data-i18n', 'hide_gauges');
+    chkSpan.textContent = 'Hide gauges';
+
+    label.appendChild(chk);
+    label.appendChild(chkSpan);
+
+    const btnDone = document.createElement('button');
+    btnDone.id = 'btn-focus-done';
+    btnDone.setAttribute('data-i18n', 'done');
+    btnDone.textContent = 'Done';
+
+    const btnCancel = document.createElement('button');
+    btnCancel.id = 'btn-focus-cancel';
+    btnCancel.setAttribute('data-i18n', 'cancel');
+    btnCancel.textContent = 'Cancel';
+
+    bar.appendChild(spanWrapper);
+    bar.appendChild(label);
+    bar.appendChild(btnDone);
+    bar.appendChild(btnCancel);
+
     const firstGrid = document.querySelector('.charts-grid');
     if (firstGrid) firstGrid.parentNode.insertBefore(bar, firstGrid);
-    document.getElementById('btn-focus-done').addEventListener('click', toggleFocusMode);
-    document.getElementById('btn-focus-cancel').addEventListener('click', () => {
+
+    chk.addEventListener('change', (e) => {
+        localStorage.setItem('kula_focus_hide_gauges', e.target.checked ? 'true' : 'false');
+    });
+
+    btnDone.addEventListener('click', toggleFocusMode);
+    btnCancel.addEventListener('click', () => {
         state.focusSelecting = false;
         state.focusMode = false;
-        document.querySelectorAll('.charts-grid').forEach(g => g.classList.remove('focus-selecting'));
-        document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-selecting'));
+        document.querySelectorAll('.charts-grid').forEach(g => g.classList.remove('focus-selecting', 'focus-hidden'));
+        document.querySelectorAll('.section-title').forEach(t => t.classList.remove('focus-selecting', 'focus-hidden'));
         document.getElementById('btn-focus').classList.remove('focus-active');
+        document.getElementById('gauges-row')?.classList.remove('focus-hidden');
         removeFocusBar();
+        restoreGrids();
     });
+
+    if (typeof applyTranslation === 'function') {
+        applyTranslation(document.getElementById('focus-bar'));
+    }
 }
 
 function removeFocusBar() {
@@ -149,9 +224,27 @@ function removeFocusBar() {
 function applyStoredFocusMode() {
     if (state.focusVisible && state.focusVisible.length > 0) {
         state.focusMode = true;
-        document.querySelectorAll('.charts-grid').forEach(g => g.classList.add('focus-active'));
-        document.querySelectorAll('.section-title').forEach(t => t.classList.add('focus-active'));
-        document.getElementById('btn-focus').classList.add('focus-active');
+        document.getElementById('btn-focus')?.classList.add('focus-active');
+
+        const grids = document.querySelectorAll('.charts-grid');
+        grids.forEach(g => {
+            const hasVisible = Array.from(g.querySelectorAll('.chart-card')).some(el => {
+                const id = el.id;
+                const isSelected = state.focusVisible.includes(id);
+                const isHidden = el.classList.contains('hidden');
+                return isSelected && !isHidden;
+            });
+            g.classList.toggle('focus-active', hasVisible);
+            g.classList.toggle('focus-hidden', !hasVisible);
+        });
+
+        document.querySelectorAll('.section-title').forEach(t => {
+            const grid = t.nextElementSibling;
+            const hasVisible = grid?.classList.contains('charts-grid') && grid.classList.contains('focus-active');
+            t.classList.toggle('focus-active', !!hasVisible);
+            t.classList.toggle('focus-hidden', !hasVisible);
+        });
+
         chartCardIds.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -161,5 +254,37 @@ function applyStoredFocusMode() {
                 el.classList.toggle('focus-visible', isSelected && !isHidden);
             }
         });
+
+        if (localStorage.getItem('kula_focus_hide_gauges') === 'true') {
+            document.getElementById('gauges-row')?.classList.add('focus-hidden');
+        }
+
+        combineGrids();
     }
+}
+
+function combineGrids() {
+    const mainGrid = document.getElementById('charts-grid');
+    if (!mainGrid) return;
+    chartCardIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) mainGrid.appendChild(el);
+    });
+}
+
+function restoreGrids() {
+    const mainGrid = document.getElementById('charts-grid');
+    const thermalsGrid = document.getElementById('thermals-grid');
+    if (!mainGrid || !thermalsGrid) return;
+    const thermalsIds = ['card-cpu-temp', 'card-disk-temp', 'card-gpu-temp'];
+    chartCardIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (thermalsIds.includes(id)) {
+                thermalsGrid.appendChild(el);
+            } else {
+                mainGrid.appendChild(el);
+            }
+        }
+    });
 }

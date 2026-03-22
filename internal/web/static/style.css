@@ -849,14 +849,25 @@ body.light-mode .time-input {
     position: relative;
 }
 
-.charts-grid.focus-selecting,
-.charts-grid.focus-active {
+.charts-grid.focus-selecting:not(.hidden),
+.charts-grid.focus-active:not(.hidden) {
     display: grid !important;
 }
 
-.section-title.focus-selecting,
-.section-title.focus-active {
+.section-title.focus-selecting:not(.hidden) {
     display: block !important;
+}
+
+.section-title.focus-active:not(.hidden) {
+    display: none !important;
+}
+
+.charts-grid.focus-active ~ .section-title.focus-active + .charts-grid.focus-active {
+    padding-top: 0 !important;
+}
+
+.focus-hidden {
+    display: none !important;
 }
 
 .focus-selecting .chart-card::after {
