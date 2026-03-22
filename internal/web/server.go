@@ -24,6 +24,7 @@ import (
 
 	"kula/internal/collector"
 	"kula/internal/config"
+	"kula/internal/i18n"
 	"kula/internal/storage"
 )
 
@@ -48,13 +49,13 @@ type Server struct {
 
 func NewServer(cfg config.WebConfig, global config.GlobalConfig, c *collector.Collector, s *storage.Store, storageDir string) *Server {
 	srv := &Server{
-		cfg:       cfg,
-		global:    global,
-		collector: c,
-		store:     s,
-		auth:      NewAuthManager(cfg.Auth, storageDir, cfg.TrustProxy),
-		hub:       newWSHub(),
-		sriHashes: make(map[string]string),
+		cfg:        cfg,
+		global:     global,
+		collector:  c,
+		store:      s,
+		auth:       NewAuthManager(cfg.Auth, storageDir, cfg.TrustProxy),
+		hub:        newWSHub(),
+		sriHashes:  make(map[string]string),
 		wsIPCounts: make(map[string]int),
 	}
 	srv.initializeTemplates()
@@ -201,6 +202,7 @@ func (s *Server) Start() error {
 	apiMux.HandleFunc("/api/login", s.handleLogin)
 	apiMux.HandleFunc("/api/logout", s.handleLogout)
 	apiMux.HandleFunc("/api/auth/status", s.handleAuthStatus)
+	apiMux.HandleFunc("/api/i18n", s.handleI18n)
 
 	// Wrap apiMux with logging and CSRF protection
 	loggedApiMux := s.auth.CSRFMiddleware(loggingMiddleware(s.cfg, apiMux))
@@ -478,6 +480,10 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 				"auto":  s.collector.DetectLinkSpeed(),
 			},
 		},
+		"lang": map[string]interface{}{
+			"default": s.cfg.Lang.Default,
+			"force":   s.cfg.Lang.Force,
+		},
 	}
 
 	if s.global.ShowVersion {
@@ -584,6 +590,34 @@ func (s *Server) handleAuthStatus(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(status); err != nil {
 		log.Printf("JSON encode error: %v", err)
 	}
+}
+
+func (s *Server) handleI18n(w http.ResponseWriter, r *http.Request) {
+	lang := r.URL.Query().Get("lang")
+	if lang == "" {
+		lang = "en"
+	}
+
+	// Basic security check for lang parameter
+	if strings.Contains(lang, "..") || strings.Contains(lang, "/") || strings.Contains(lang, "\\") {
+		jsonError(w, "invalid language", http.StatusBadRequest)
+		return
+	}
+
+	data, err := i18n.GetRawLocale(lang)
+	if err != nil {
+		// Fallback to English if language not found
+		if lang != "en" {
+			data, err = i18n.GetRawLocale("en")
+		}
+		if err != nil {
+			jsonError(w, "translation not found", http.StatusNotFound)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(data)
 }
 
 // wsHub manages WebSocket connections
@@ -773,11 +807,15 @@ func (s *Server) renderTemplate(w http.ResponseWriter, r *http.Request, template
 	}
 
 	data := struct {
-		Nonce string
-		SRI   map[string]string
+		Nonce       string
+		SRI         map[string]string
+		AuthEnabled bool
+		LangForce   bool
 	}{
-		Nonce: nonce,
-		SRI:   s.sriHashes,
+		Nonce:       nonce,
+		SRI:         s.sriHashes,
+		AuthEnabled: s.cfg.Auth.Enabled,
+		LangForce:   s.cfg.Lang.Force,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

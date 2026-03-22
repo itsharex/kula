@@ -315,6 +315,9 @@ function addSampleToCharts(item, ts) {
 // Batch-update all charts at once
 function updateAllCharts() {
     setChartTimeRange();
+    if (typeof updateChartLabels === 'function') {
+        updateChartLabels();
+    }
     Object.values(state.charts).forEach(chart => {
         if (chart) chart.update('none');
     });

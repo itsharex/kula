@@ -18,20 +18,24 @@
 </head>
 
 <body>
+    {{if .AuthEnabled}}
     <!-- Login overlay -->
     <div id="login-overlay" class="login-overlay hidden">
         <div class="login-card">
             <div class="login-logo"><img src="kula.svg" alt="" /></div>
-            <h1>KULA</h1>
-            <p>Server Monitoring</p>
+            <h1>K U L A</h1>
+            <p data-i18n="server_monitoring">Server Monitoring</p>
             <form id="login-form">
-                <input type="text" id="login-user" placeholder="Username" autocomplete="username" required>
-                <input type="password" id="login-pass" placeholder="Password" autocomplete="current-password" required>
-                <button type="submit">Sign In</button>
+                <input type="text" id="login-user" data-i18n-placeholder="username" placeholder="Username"
+                    autocomplete="username" required>
+                <input type="password" id="login-pass" data-i18n-placeholder="password" placeholder="Password"
+                    autocomplete="current-password" required>
+                <button type="submit" data-i18n="sign_in">Sign In</button>
                 <div id="login-error" class="login-error hidden"></div>
             </form>
         </div>
     </div>
+    {{end}}
 
     <!-- Main dashboard -->
     <div id="dashboard" class="dashboard">
@@ -50,31 +54,32 @@
                 <button id="btn-pause" class="btn-icon" title="Pause/Resume">⏸</button>
                 <!-- Info dropdown -->
                 <div class="alert-container" id="info-container">
-                    <button id="btn-info" class="btn-icon btn-info" title="System Info">📡</button>
+                    <button id="btn-info" class="btn-icon btn-info" data-i18n-title="system_info"
+                        title="System Info">📡</button>
                     <div id="info-dropdown" class="alert-dropdown hidden">
-                        <div class="alert-dropdown-header">System Info</div>
+                        <div class="alert-dropdown-header" data-i18n="system_info">System Info</div>
                         <div class="alert-list">
                             <div class="alert-item" id="row-os">
                                 <div class="alert-item-body">
-                                    <div class="alert-item-title">OS</div>
+                                    <div class="alert-item-title" data-i18n="os">OS</div>
                                     <div class="alert-item-detail" id="sys-os"></div>
                                 </div>
                             </div>
                             <div class="alert-item" id="row-kernel">
                                 <div class="alert-item-body">
-                                    <div class="alert-item-title">Kernel</div>
+                                    <div class="alert-item-title" data-i18n="kernel">Kernel</div>
                                     <div class="alert-item-detail" id="sys-kernel"></div>
                                 </div>
                             </div>
                             <div class="alert-item" id="row-arch">
                                 <div class="alert-item-body">
-                                    <div class="alert-item-title">Architecture</div>
+                                    <div class="alert-item-title" data-i18n="architecture">Architecture</div>
                                     <div class="alert-item-detail" id="sys-arch"></div>
                                 </div>
                             </div>
                             <div class="alert-item">
                                 <div class="alert-item-body">
-                                    <div class="alert-item-title">Uptime</div>
+                                    <div class="alert-item-title" data-i18n="uptime">Uptime</div>
                                     <div class="alert-item-detail" id="uptime"></div>
                                 </div>
                             </div>
@@ -83,27 +88,69 @@
                 </div>
                 <!-- Alert bell -->
                 <div class="alert-container" id="alert-container">
-                    <button id="btn-alerts" class="btn-icon btn-alert" title="Alerts">
+                    <button id="btn-alerts" class="btn-icon btn-alert" data-i18n-title="alerts" title="Alerts">
                         🔔
                         <span id="alert-badge" class="alert-badge hidden">0</span>
                     </button>
                     <div id="alert-dropdown" class="alert-dropdown hidden">
-                        <div class="alert-dropdown-header">Alerts</div>
+                        <div class="alert-dropdown-header" data-i18n="alerts">Alerts</div>
                         <div id="alert-list" class="alert-list">
-                            <div class="alert-empty">No active alerts</div>
+                            <div class="alert-empty" data-i18n="no_active_alerts">No active alerts</div>
                         </div>
                     </div>
                 </div>
                 <!-- Theme toggle -->
-                <button id="btn-theme" class="btn-icon" title="Toggle light/dark mode">🌓</button>
+                <button id="btn-theme" class="btn-icon" data-i18n-title="toggle_theme"
+                    title="Toggle light/dark mode">🌓</button>
                 <!-- Focus mode -->
-                <button id="btn-focus" class="btn-icon" title="Focus mode">🎯</button>
+                <button id="btn-focus" class="btn-icon" data-i18n-title="focus_mode" title="Focus mode">🎯</button>
                 <!-- Game easter egg -->
-                <a href="/game.html" class="btn-icon btn-game" title="Space Invaders" id="btn-game">🎮</a>
+                <a href="/game.html" class="btn-icon btn-game" data-i18n-title="space_invaders" title="Space Invaders"
+                    id="btn-game">🎮</a>
                 <!-- Layout toggle -->
-                <button id="btn-layout" class="btn-icon" title="Switch to list layout">⊞</button>
-                <button id="btn-logout" class="btn-icon hidden" title="Logout">🔒</button>
+                <button id="btn-layout" class="btn-icon" data-i18n-title="switch_list"
+                    title="Switch to list layout">⊞</button>
+                <button id="btn-logout" class="btn-icon hidden" data-i18n-title="logout" title="Logout">🔒</button>
                 <span id="clock" class="clock"></span>
+                {{if not .LangForce}}
+                <!-- Language toggle -->
+                <div class="header-lang">
+                    <div class="lang-dropdown" id="lang-dropdown">
+                        <button class="lang-btn" id="lang-btn" data-i18n-title="select_language" title="Select Language">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="globe-icon"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            <span id="active-lang-code" class="lang-code">EN</span>
+                        </button>
+                        <div class="lang-menu hidden" id="lang-menu">
+                            <button class="lang-option" data-lang="ar">العربية</button>
+                            <button class="lang-option" data-lang="bn">বাংলা</button>
+                            <button class="lang-option" data-lang="cs">Čeština</button>
+                            <button class="lang-option" data-lang="de">Deutsch</button>
+                            <button class="lang-option" data-lang="en">English</button>
+                            <button class="lang-option" data-lang="es">Español</button>
+                            <button class="lang-option" data-lang="fr">Français</button>
+                            <button class="lang-option" data-lang="he">עברית</button>
+                            <button class="lang-option" data-lang="hi">हिन्दी</button>
+                            <button class="lang-option" data-lang="id">Indonesia</button>
+                            <button class="lang-option" data-lang="it">Italiano</button>
+                            <button class="lang-option" data-lang="ja">日本語</button>
+                            <button class="lang-option" data-lang="ko">한국어</button>
+                            <button class="lang-option" data-lang="ms">Melayu</button>
+                            <button class="lang-option" data-lang="nl">Nederlands</button>
+                            <button class="lang-option" data-lang="pl">Polski</button>
+                            <button class="lang-option" data-lang="pt">Português</button>
+                            <button class="lang-option" data-lang="ro">Română</button>
+                            <button class="lang-option" data-lang="ru">Русский</button>
+                            <button class="lang-option" data-lang="sv">Svenska</button>
+                            <button class="lang-option" data-lang="th">ไทย</button>
+                            <button class="lang-option" data-lang="tr">Türkçe</button>
+                            <button class="lang-option" data-lang="uk">Українська</button>
+                            <button class="lang-option" data-lang="ur">اردو</button>
+                            <button class="lang-option" data-lang="vi">Tiếng Việt</button>
+                            <button class="lang-option" data-lang="zh">中文</button>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
             </div>
         </header>
 
@@ -111,33 +158,33 @@
         <section class="gauges-row" id="gauges-row">
             <div class="gauge-card" id="gauge-cpu">
                 <div id="gauge-cpu-canvas"></div>
-                <div class="gauge-label">CPU</div>
+                <div class="gauge-label" data-i18n="cpu">CPU</div>
                 <div class="gauge-value" id="gauge-cpu-value">0%</div>
                 <div class="gauge-value hidden" id="gauge-cpu-temp">--°C</div>
             </div>
             <div class="gauge-card" id="gauge-ram">
                 <div id="gauge-ram-canvas"></div>
-                <div class="gauge-label">RAM</div>
+                <div class="gauge-label" data-i18n="ram">RAM</div>
                 <div class="gauge-value" id="gauge-ram-value">0%</div>
             </div>
             <div class="gauge-card" id="gauge-swap">
                 <div id="gauge-swap-canvas"></div>
-                <div class="gauge-label">SWAP</div>
+                <div class="gauge-label" data-i18n="swap">SWAP</div>
                 <div class="gauge-value" id="gauge-swap-value">0%</div>
             </div>
             <div class="gauge-card" id="gauge-lavg">
                 <div id="gauge-lavg-canvas"></div>
-                <div class="gauge-label">Load Avg (1m)</div>
+                <div class="gauge-label" data-i18n="load_avg">Load Avg (1m)</div>
                 <div class="gauge-value" id="gauge-lavg-value">0.00</div>
             </div>
             <div class="gauge-card" id="gauge-dl">
                 <div id="gauge-dl-canvas"></div>
-                <div class="gauge-label">↓ Download</div>
+                <div class="gauge-label" data-i18n="download">↓ Download</div>
                 <div class="gauge-value" id="gauge-dl-value">0 Mbps</div>
             </div>
             <div class="gauge-card" id="gauge-ul">
                 <div id="gauge-ul-canvas"></div>
-                <div class="gauge-label">↑ Upload</div>
+                <div class="gauge-label" data-i18n="upload">↑ Upload</div>
                 <div class="gauge-value" id="gauge-ul-value">0 Mbps</div>
             </div>
         </section>
@@ -145,7 +192,8 @@
         <!-- Time controls -->
         <section class="time-controls">
             <div class="time-presets">
-                <button id="btn-time-menu" class="btn-icon btn-time-menu" title="Time presets">⋮</button>
+                <button id="btn-time-menu" class="btn-icon btn-time-menu" data-i18n-title="time_presets"
+                    title="Time presets">⋮</button>
                 <div id="time-presets-list" class="time-presets-list">
                     <button class="time-btn" data-range="60">1m</button>
                     <button class="time-btn active" data-range="300">5m</button>
@@ -161,34 +209,36 @@
                     <button class="time-btn" data-range="2592000">30d</button>
                 </div>
                 <span class="time-divider" id="agg-desktop-divider">│</span>
-                <button id="btn-agg-menu" class="btn-icon btn-time-menu" title="Aggregation">📊</button>
+                <button id="btn-agg-menu" class="btn-icon btn-time-menu" data-i18n-title="aggregation"
+                    title="Aggregation">📊</button>
                 <div id="agg-presets-list" class="time-presets-list">
-                    <button class="time-btn active" data-agg="avg">Avg</button>
-                    <button class="time-btn" data-agg="min">Min</button>
-                    <button class="time-btn" data-agg="max">Max</button>
+                    <button class="time-btn active" data-agg="avg" data-i18n="avg">Avg</button>
+                    <button class="time-btn" data-agg="min" data-i18n="min">Min</button>
+                    <button class="time-btn" data-agg="max" data-i18n="max">Max</button>
                 </div>
                 <span class="time-divider" id="agg-divider">│</span>
-                <button class="time-btn" id="btn-custom-range" title="Custom range">📅</button>
+                <button class="time-btn" id="btn-custom-range" data-i18n-title="custom_range"
+                    title="Custom range">📅</button>
                 <span id="loading-spinner" class="loading-spinner hidden" title="Loading history...">⏳</span>
             </div>
             <div class="time-custom hidden" id="time-custom">
                 <input type="datetime-local" id="custom-from" class="time-input">
                 <span class="time-sep">→</span>
                 <input type="datetime-local" id="custom-to" class="time-input">
-                <button class="time-btn time-apply" id="btn-apply-custom">Apply</button>
+                <button class="time-btn time-apply" id="btn-apply-custom" data-i18n="apply">Apply</button>
             </div>
             <div class="time-info">
-                <span id="time-range-display">Last 5 minutes</span>
+                <span id="time-range-display" data-i18n="last_5_m">Last 5 minutes</span>
                 <span id="sampling-info" class="sampling-info"></span>
             </div>
         </section>
 
         <!-- Charts grid -->
-        <h2 class="section-title">System Metrics</h2>
+        <h2 class="section-title" data-i18n="system_metrics">System Metrics</h2>
         <section class="charts-grid" id="charts-grid">
             <div class="chart-card" id="card-cpu">
                 <div class="chart-header">
-                    <h3>CPU Usage</h3>
+                    <h3 data-i18n="cpu_usage">CPU Usage</h3>
                     <span class="chart-subtitle" id="cpu-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-cpu"></canvas></div>
@@ -196,7 +246,7 @@
 
             <div class="chart-card" id="card-loadavg">
                 <div class="chart-header">
-                    <h3>Load Average</h3>
+                    <h3 data-i18n="load_average">Load Average</h3>
                     <span class="chart-subtitle" id="lavg-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-loadavg"></canvas></div>
@@ -204,7 +254,7 @@
 
             <div class="chart-card" id="card-memory">
                 <div class="chart-header">
-                    <h3>Memory Usage</h3>
+                    <h3 data-i18n="memory_usage">Memory Usage</h3>
                     <span class="chart-subtitle" id="mem-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-memory"></canvas></div>
@@ -212,7 +262,7 @@
 
             <div class="chart-card" id="card-swap">
                 <div class="chart-header">
-                    <h3>Swap Usage</h3>
+                    <h3 data-i18n="swap_usage">Swap Usage</h3>
                     <span class="chart-subtitle" id="swap-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-swap"></canvas></div>
@@ -220,7 +270,7 @@
 
             <div class="chart-card" id="card-network">
                 <div class="chart-header">
-                    <h3>Network Throughput</h3>
+                    <h3 data-i18n="network_throughput">Network Throughput</h3>
                     <span class="chart-subtitle" id="net-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="net-selector" class="chart-selector hidden"></select>
@@ -231,7 +281,7 @@
 
             <div class="chart-card" id="card-pps">
                 <div class="chart-header">
-                    <h3>Packets / sec</h3>
+                    <h3 data-i18n="packets_sec">Packets / sec</h3>
                     <span class="chart-subtitle" id="pps-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="pps-selector" class="chart-selector hidden"></select>
@@ -242,7 +292,7 @@
 
             <div class="chart-card" id="card-connections">
                 <div class="chart-header">
-                    <h3>Connections & Sockets</h3>
+                    <h3 data-i18n="connections_sockets">Connections & Sockets</h3>
                     <span class="chart-subtitle" id="conn-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-connections"></canvas></div>
@@ -250,7 +300,7 @@
 
             <div class="chart-card" id="card-disk-io">
                 <div class="chart-header">
-                    <h3>Disk I/O</h3>
+                    <h3 data-i18n="disk_io">Disk I/O</h3>
                     <span class="chart-subtitle" id="diskio-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="diskio-selector" class="chart-selector hidden"></select>
@@ -261,7 +311,7 @@
 
             <div class="chart-card" id="card-disk-space">
                 <div class="chart-header">
-                    <h3>Disk Space</h3>
+                    <h3 data-i18n="disk_space">Disk Space</h3>
                     <span class="chart-subtitle" id="diskspace-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="diskspace-selector" class="chart-selector hidden"></select>
@@ -272,7 +322,7 @@
 
             <div class="chart-card hidden" id="card-gpu-load">
                 <div class="chart-header">
-                    <h3>GPU Load</h3>
+                    <h3 data-i18n="gpu_load">GPU Load</h3>
                     <span class="chart-subtitle" id="gpuload-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="gpuload-selector" class="chart-selector hidden"></select>
@@ -283,7 +333,7 @@
 
             <div class="chart-card hidden" id="card-vram">
                 <div class="chart-header">
-                    <h3>VRAM Usage</h3>
+                    <h3 data-i18n="vram_usage">VRAM Usage</h3>
                     <span class="chart-subtitle" id="vram-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="vram-selector" class="chart-selector hidden"></select>
@@ -294,7 +344,7 @@
 
             <div class="chart-card" id="card-processes">
                 <div class="chart-header">
-                    <h3>Processes</h3>
+                    <h3 data-i18n="processes">Processes</h3>
                     <span class="chart-subtitle" id="proc-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-processes"></canvas></div>
@@ -302,14 +352,14 @@
 
             <div class="chart-card" id="card-entropy">
                 <div class="chart-header">
-                    <h3>Entropy</h3>
+                    <h3 data-i18n="entropy">Entropy</h3>
                 </div>
                 <div class="chart-body"><canvas id="chart-entropy"></canvas></div>
             </div>
 
             <div class="chart-card" id="card-self">
                 <div class="chart-header">
-                    <h3>Self Monitoring</h3>
+                    <h3 data-i18n="self_monitoring">Self Monitoring</h3>
                     <span class="chart-subtitle" id="self-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-self"></canvas></div>
@@ -317,11 +367,11 @@
         </section>
 
         <!-- Thermals -->
-        <h2 class="section-title hidden" id="thermals-title">Thermals</h2>
+        <h2 class="section-title hidden" id="thermals-title" data-i18n="thermals">Thermals</h2>
         <section class="charts-grid hidden" id="thermals-grid">
             <div class="chart-card hidden" id="card-cpu-temp">
                 <div class="chart-header">
-                    <h3>CPU Temperature</h3>
+                    <h3 data-i18n="cpu_temp">CPU Temperature</h3>
                     <span class="chart-subtitle" id="cputemp-subtitle"></span>
                 </div>
                 <div class="chart-body"><canvas id="chart-cpu-temp"></canvas></div>
@@ -329,7 +379,7 @@
 
             <div class="chart-card hidden" id="card-disk-temp">
                 <div class="chart-header">
-                    <h3>Disk Temperature</h3>
+                    <h3 data-i18n="disk_temp">Disk Temperature</h3>
                     <span class="chart-subtitle" id="disktemp-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="disktemp-selector" class="chart-selector hidden"></select>
@@ -340,7 +390,7 @@
 
             <div class="chart-card hidden" id="card-gpu-temp">
                 <div class="chart-header">
-                    <h3>GPU Temperature</h3>
+                    <h3 data-i18n="gpu_temp">GPU Temperature</h3>
                     <span class="chart-subtitle" id="gputemp-subtitle"></span>
                     <div class="chart-header-right">
                         <select id="gputemp-selector" class="chart-selector hidden"></select>
@@ -363,6 +413,10 @@
 
     <!-- 1. MUST BE FIRST | Foundations: state, colors, Chart.js globals, shared helpers -->
     <script nonce="{{.Nonce}}" src="js/app/state.js" integrity="{{sri `js/app/state.js`}}"
+        crossorigin="anonymous"></script>
+
+    <!-- 1b. i18n support -->
+    <script nonce="{{.Nonce}}" src="js/app/i18n.js" integrity="{{sri `js/app/i18n.js`}}"
         crossorigin="anonymous"></script>
 
     <!-- 2. Pure utilities (no dependencies on other modules) -->

@@ -8,11 +8,11 @@ function checkAuth() {
         .then(r => r.json())
         .then(data => {
             if (data.auth_required && !data.authenticated) {
-                document.getElementById('login-overlay').classList.remove('hidden');
+                document.getElementById('login-overlay')?.classList.remove('hidden');
                 document.getElementById('dashboard').style.filter = 'blur(8px)';
                 document.getElementById('btn-logout')?.classList.add('hidden');
             } else {
-                document.getElementById('login-overlay').classList.add('hidden');
+                document.getElementById('login-overlay')?.classList.add('hidden');
                 document.getElementById('dashboard').style.filter = '';
                 if (data.auth_required) {
                     document.getElementById('btn-logout')?.classList.remove('hidden');
@@ -100,8 +100,8 @@ function fetchConfig() {
 
 function handleLogin(e) {
     e.preventDefault();
-    const user = document.getElementById('login-user').value;
-    const pass = document.getElementById('login-pass').value;
+    const user = document.getElementById('login-user')?.value;
+    const pass = document.getElementById('login-pass')?.value;
     const errorEl = document.getElementById('login-error');
 
     fetch('/api/login', {
@@ -114,10 +114,10 @@ function handleLogin(e) {
             return r.json();
         })
         .then(() => {
-            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('login-overlay')?.classList.add('hidden');
             document.getElementById('dashboard').style.filter = '';
             document.getElementById('btn-logout')?.classList.remove('hidden');
-            errorEl.classList.add('hidden');
+            errorEl?.classList.add('hidden');
             fetchConfig();
             connectWS();
         })
@@ -134,11 +134,13 @@ function handleLogout() {
                 state.ws.close();
             }
             document.getElementById('btn-logout')?.classList.add('hidden');
-            document.getElementById('login-overlay').classList.remove('hidden');
+            document.getElementById('login-overlay')?.classList.remove('hidden');
             document.getElementById('dashboard').style.filter = 'blur(8px)';
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
-            document.getElementById('login-error').classList.add('hidden');
+            const userEl = document.getElementById('login-user');
+            if (userEl) userEl.value = '';
+            const passEl = document.getElementById('login-pass');
+            if (passEl) passEl.value = '';
+            document.getElementById('login-error')?.classList.add('hidden');
 
             // Clear state
             state.dataBuffer = [];

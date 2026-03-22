@@ -60,6 +60,7 @@ type WebConfig struct {
 	TrustProxy         bool        `yaml:"trust_proxy"`
 	EnableCompression  bool        `yaml:"enable_compression"`
 	Graphs             GraphConfig `yaml:"graphs"`
+	Lang               LangConfig  `yaml:"lang"`
 	Version            string      `yaml:"-"` // injected at runtime, not from config file
 	OS                 string      `yaml:"-"`
 	Kernel             string      `yaml:"-"`
@@ -83,6 +84,11 @@ type GraphConfig struct {
 type GraphMaxConfig struct {
 	MaxMode  string  `yaml:"max_mode"` // "off", "on", "auto"
 	MaxValue float64 `yaml:"max_value"`
+}
+
+type LangConfig struct {
+	Default string `yaml:"default"`
+	Force   bool   `yaml:"force"`
 }
 
 type LogConfig struct {
@@ -165,6 +171,10 @@ func DefaultConfig() *Config {
 				DiskTemp: GraphMaxConfig{MaxMode: "off", MaxValue: 100},
 				GPUTemp:  GraphMaxConfig{MaxMode: "off", MaxValue: 100},
 				Network:  GraphMaxConfig{MaxMode: "off", MaxValue: 1000}, // 1000 Mbps
+			},
+			Lang: LangConfig{
+				Default: "en",
+				Force:   false,
 			},
 			MaxWebsocketConns:      100,
 			MaxWebsocketConnsPerIP: 5,

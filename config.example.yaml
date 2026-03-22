@@ -71,7 +71,15 @@ web:
 
   # Default aggregation for historical data: avg, min, or max (default: avg)
   default_aggregation: avg
-
+ 
+  # Language settings for the web dashboard
+  lang:
+    # Default language ISO code (default: en)
+    # Available ISO codes: ar, de, en, es, fr, hi, ja, ko, pl, pt, zh
+    default: en
+    # Force the default language and hide the language selector (default: false)
+    force: false
+ 
   # Optional bounds limits for dynamic charts. "max_mode" can be:
   # "off": Unrestricted, Chart.js auto-scales Y-axis by stream data peaks.
   # "on": Imposes a hard Y-axis maximum matching "max_value". 

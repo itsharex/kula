@@ -77,11 +77,11 @@ function initCharts() {
 
     // CPU
     state.charts.cpu = createTimeSeriesChart('chart-cpu', [
-        { label: 'User', borderColor: colors.blue, backgroundColor: colors.blueAlpha, fill: true, data: [] },
-        { label: 'System', borderColor: colors.red, backgroundColor: colors.redAlpha, fill: true, data: [] },
-        { label: 'IOWait', borderColor: colors.yellow, backgroundColor: colors.yellowAlpha, fill: true, data: [] },
-        { label: 'Steal', borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
-        { label: 'Total', borderColor: colors.cyan, data: [], fill: false, borderWidth: 2 },
+        { label: i18n.t('user'), borderColor: colors.blue, backgroundColor: colors.blueAlpha, fill: true, data: [] },
+        { label: i18n.t('system'), borderColor: colors.red, backgroundColor: colors.redAlpha, fill: true, data: [] },
+        { label: i18n.t('iowait'), borderColor: colors.yellow, backgroundColor: colors.yellowAlpha, fill: true, data: [] },
+        { label: i18n.t('steal'), borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
+        { label: i18n.t('total'), borderColor: colors.cyan, data: [], fill: false, borderWidth: 2 },
     ], { max: 100, ticks: { callback: v => v + '%' } });
 
     state.cpuTempSensorNames = [];
@@ -90,32 +90,32 @@ function initCharts() {
     if (cpuTempMax !== undefined) cpuTempYConfig.max = cpuTempMax;
 
     state.charts.cputemp = createTimeSeriesChart('chart-cpu-temp', [
-        { label: 'Temperature', borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
+        { label: i18n.t('temperature'), borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
     ], cpuTempYConfig);
 
     // Load Average
     state.charts.loadavg = createTimeSeriesChart('chart-loadavg', [
-        { label: '1 min', borderColor: colors.red, data: [], fill: false, borderWidth: 2 },
-        { label: '5 min', borderColor: colors.yellow, data: [], fill: false },
-        { label: '15 min', borderColor: colors.green, data: [], fill: false },
+        { label: i18n.t('1_min'), borderColor: colors.red, data: [], fill: false, borderWidth: 2 },
+        { label: i18n.t('5_min'), borderColor: colors.yellow, data: [], fill: false },
+        { label: i18n.t('15_min'), borderColor: colors.green, data: [], fill: false },
     ]);
 
     // Memory — with Free, Available, and Shmem datasets, max set dynamically
     state.charts.memory = createTimeSeriesChart('chart-memory', [
-        { label: 'Used', borderColor: colors.blue, backgroundColor: colors.blueAlpha, fill: true, data: [] },
-        { label: 'Buffers', borderColor: colors.cyan, backgroundColor: colors.cyanAlpha, fill: true, data: [] },
-        { label: 'Cached', borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
-        { label: 'Shmem', borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
-        { label: 'Free', borderColor: colors.teal, data: [], fill: false, borderDash: [4, 2] },
-        { label: 'Available', borderColor: colors.lime, data: [], fill: false, borderDash: [4, 2] },
+        { label: i18n.t('used'), borderColor: colors.blue, backgroundColor: colors.blueAlpha, fill: true, data: [] },
+        { label: i18n.t('buffers'), borderColor: colors.cyan, backgroundColor: colors.cyanAlpha, fill: true, data: [] },
+        { label: i18n.t('cached'), borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
+        { label: i18n.t('shmem'), borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
+        { label: i18n.t('free'), borderColor: colors.teal, data: [], fill: false, borderDash: [4, 2] },
+        { label: i18n.t('available'), borderColor: colors.lime, data: [], fill: false, borderDash: [4, 2] },
     ], { ticks: { callback: v => formatBytesShort(v) } }, {
         tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatBytesShort(ctx.parsed.y) } }
     });
 
     // Swap — with Free dataset, max set dynamically
     state.charts.swap = createTimeSeriesChart('chart-swap', [
-        { label: 'Used', borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
-        { label: 'Free', borderColor: colors.teal, data: [], fill: false, borderDash: [4, 2] },
+        { label: i18n.t('used'), borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
+        { label: i18n.t('free'), borderColor: colors.teal, data: [], fill: false, borderDash: [4, 2] },
     ], { min: 0, ticks: { callback: v => formatBytesShort(v) } }, {
         tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatBytesShort(ctx.parsed.y) } }
     });
@@ -125,32 +125,32 @@ function initCharts() {
     if (networkMax !== undefined) networkYConfig.max = networkMax;
 
     state.charts.network = createTimeSeriesChart('chart-network', [
-        { label: '↓ RX', borderColor: colors.cyan, backgroundColor: colors.cyanAlpha, fill: true, data: [] },
-        { label: '↑ TX', borderColor: colors.pink, backgroundColor: colors.pinkAlpha, fill: true, data: [] },
+        { label: i18n.t('rx'), borderColor: colors.cyan, backgroundColor: colors.cyanAlpha, fill: true, data: [] },
+        { label: i18n.t('tx'), borderColor: colors.pink, backgroundColor: colors.pinkAlpha, fill: true, data: [] },
     ], networkYConfig);
 
     state.charts.pps = createTimeSeriesChart('chart-pps', [
-        { label: '↓ RX pps', borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
-        { label: '↑ TX pps', borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
+        { label: i18n.t('rx_pps'), borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
+        { label: i18n.t('tx_pps'), borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [] },
     ], { ticks: { callback: v => formatPPS(v) } }, {
         tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatPPS(Math.round(ctx.parsed.y)) } }
     });
 
     // Connections
     state.charts.connections = createTimeSeriesChart('chart-connections', [
-        { label: 'TCP', borderColor: colors.blue, data: [], fill: false },
-        { label: 'UDP', borderColor: colors.green, data: [], fill: false },
-        { label: 'TIME_WAIT', borderColor: colors.yellow, data: [], fill: false },
-        { label: 'Established', borderColor: colors.cyan, data: [], fill: false },
-        { label: 'InErrs', borderColor: colors.red, data: [], fill: false, borderDash: [4, 2] },
-        { label: 'OutRsts', borderColor: colors.orange, data: [], fill: false, borderDash: [4, 2] },
+        { label: i18n.t('tcp'), borderColor: colors.blue, data: [], fill: false },
+        { label: i18n.t('udp'), borderColor: colors.green, data: [], fill: false },
+        { label: i18n.t('time_wait'), borderColor: colors.yellow, data: [], fill: false },
+        { label: i18n.t('established'), borderColor: colors.cyan, data: [], fill: false },
+        { label: i18n.t('inerrs'), borderColor: colors.red, data: [], fill: false, borderDash: [4, 2] },
+        { label: i18n.t('outrsts'), borderColor: colors.orange, data: [], fill: false, borderDash: [4, 2] },
     ]);
 
     state.charts.diskio = createTimeSeriesChart('chart-disk-io', [
-        { label: 'Read B/s', borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [], yAxisID: 'y' },
-        { label: 'Write B/s', borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [], yAxisID: 'y' },
-        { label: 'Reads/s', borderColor: colors.cyan, data: [], fill: false, borderDash: [4, 2], yAxisID: 'y1' },
-        { label: 'Writes/s', borderColor: colors.pink, data: [], fill: false, borderDash: [4, 2], yAxisID: 'y1' },
+        { label: i18n.t('read_bs'), borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [], yAxisID: 'y' },
+        { label: i18n.t('write_bs'), borderColor: colors.orange, backgroundColor: colors.orangeAlpha, fill: true, data: [], yAxisID: 'y' },
+        { label: i18n.t('reads_s'), borderColor: colors.cyan, data: [], fill: false, borderDash: [4, 2], yAxisID: 'y1' },
+        { label: i18n.t('writes_s'), borderColor: colors.pink, data: [], fill: false, borderDash: [4, 2], yAxisID: 'y1' },
     ], { ticks: { callback: v => formatBytesShort(v) + '/s' } }, {
         tooltip: {
             callbacks: {
@@ -178,7 +178,7 @@ function initCharts() {
     if (diskTempMax !== undefined) diskTempYConfig.max = diskTempMax;
 
     state.charts.disktemp = createTimeSeriesChart('chart-disk-temp', [
-        { label: 'Temperature', borderColor: colors.red, backgroundColor: colors.redAlpha, fill: true, data: [] },
+        { label: i18n.t('temperature'), borderColor: colors.red, backgroundColor: colors.redAlpha, fill: true, data: [] },
     ], diskTempYConfig);
 
     // Disk Space — datasets are added dynamically per mount on first sample
@@ -200,22 +200,22 @@ function initCharts() {
 
     // Processes
     state.charts.processes = createTimeSeriesChart('chart-processes', [
-        { label: 'Running', borderColor: colors.green, data: [], fill: false },
-        { label: 'Sleeping', borderColor: colors.blue, data: [], fill: false },
-        { label: 'Blocked', borderColor: colors.red, data: [], fill: false },
-        { label: 'Zombie', borderColor: colors.yellow, data: [], fill: false },
-        { label: 'Total', borderColor: colors.cyan, data: [], fill: false, borderDash: [4, 2] },
+        { label: i18n.t('running'), borderColor: colors.green, data: [], fill: false },
+        { label: i18n.t('sleeping'), borderColor: colors.blue, data: [], fill: false },
+        { label: i18n.t('blocked'), borderColor: colors.red, data: [], fill: false },
+        { label: i18n.t('zombie'), borderColor: colors.yellow, data: [], fill: false },
+        { label: i18n.t('total'), borderColor: colors.cyan, data: [], fill: false, borderDash: [4, 2] },
     ]);
 
     // Entropy
     state.charts.entropy = createTimeSeriesChart('chart-entropy', [
-        { label: 'Entropy', borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
+        { label: i18n.t('entropy'), borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
     ]);
 
     // GPU Load
     state.charts.gpuload = createTimeSeriesChart('chart-gpu-load', [
-        { label: 'Load %', borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
-        { label: 'Power W', borderColor: colors.orange, data: [], fill: false, yAxisID: 'y1' },
+        { label: i18n.t('load_pct'), borderColor: colors.green, backgroundColor: colors.greenAlpha, fill: true, data: [] },
+        { label: i18n.t('power_w'), borderColor: colors.orange, data: [], fill: false, yAxisID: 'y1' },
     ], { max: 100, ticks: { callback: v => v + '%' } });
     if (state.charts.gpuload) {
         state.charts.gpuload.options.scales.y1 = {
@@ -229,7 +229,7 @@ function initCharts() {
 
     // VRAM
     state.charts.vram = createTimeSeriesChart('chart-vram', [
-        { label: 'VRAM Used', borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
+        { label: i18n.t('used'), borderColor: colors.purple, backgroundColor: colors.purpleAlpha, fill: true, data: [] },
     ], { ticks: { callback: v => formatBytesShort(v) } }, {
         tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatBytesShort(ctx.parsed.y) } }
     });
@@ -238,13 +238,13 @@ function initCharts() {
     let gpuTempMax = getChartMaxBound('gpu_temp');
     let gpuTempYConfig = { max: gpuTempMax, ticks: { callback: v => v.toFixed(1) + '°C' } };
     state.charts.gputemp = createTimeSeriesChart('chart-gpu-temp', [
-        { label: 'Temperature', borderColor: colors.red, backgroundColor: colors.redAlpha, fill: true, data: [] },
+        { label: i18n.t('temperature'), borderColor: colors.red, backgroundColor: colors.redAlpha, fill: true, data: [] },
     ], gpuTempYConfig);
 
     // Self monitoring
     state.charts.self = createTimeSeriesChart('chart-self', [
-        { label: 'CPU %', borderColor: colors.cyan, data: [], fill: false, yAxisID: 'y' },
-        { label: 'RSS', borderColor: colors.purple, data: [], fill: false, yAxisID: 'y1' },
+        { label: i18n.t('cpu_pct'), borderColor: colors.cyan, data: [], fill: false, yAxisID: 'y' },
+        { label: i18n.t('rss'), borderColor: colors.purple, data: [], fill: false, yAxisID: 'y1' },
     ], {}, {
         tooltip: {
             callbacks: {
@@ -286,4 +286,100 @@ function setChartTimeRange() {
         chart.options.scales.x.min = xMin;
         chart.options.scales.x.max = xMax;
     });
+}
+
+function updateChartLabels() {
+    if (!state.charts) return;
+
+    if (state.charts.cpu) {
+        state.charts.cpu.data.datasets[0].label = i18n.t('user');
+        state.charts.cpu.data.datasets[1].label = i18n.t('system');
+        state.charts.cpu.data.datasets[2].label = i18n.t('iowait');
+        state.charts.cpu.data.datasets[3].label = i18n.t('steal');
+        state.charts.cpu.data.datasets[4].label = i18n.t('total');
+    }
+
+    if (state.charts.cputemp && state.cpuTempSensorNames.length === 0) {
+        state.charts.cputemp.data.datasets[0].label = i18n.t('temperature');
+    }
+
+    if (state.charts.loadavg) {
+        state.charts.loadavg.data.datasets[0].label = i18n.t('1_min');
+        state.charts.loadavg.data.datasets[1].label = i18n.t('5_min');
+        state.charts.loadavg.data.datasets[2].label = i18n.t('15_min');
+    }
+
+    if (state.charts.memory) {
+        state.charts.memory.data.datasets[0].label = i18n.t('used');
+        state.charts.memory.data.datasets[1].label = i18n.t('buffers');
+        state.charts.memory.data.datasets[2].label = i18n.t('cached');
+        state.charts.memory.data.datasets[3].label = i18n.t('shmem');
+        state.charts.memory.data.datasets[4].label = i18n.t('free');
+        state.charts.memory.data.datasets[5].label = i18n.t('available');
+    }
+
+    if (state.charts.swap) {
+        state.charts.swap.data.datasets[0].label = i18n.t('used');
+        state.charts.swap.data.datasets[1].label = i18n.t('free');
+    }
+
+    if (state.charts.network) {
+        state.charts.network.data.datasets[0].label = i18n.t('rx');
+        state.charts.network.data.datasets[1].label = i18n.t('tx');
+    }
+
+    if (state.charts.pps) {
+        state.charts.pps.data.datasets[0].label = i18n.t('rx_pps');
+        state.charts.pps.data.datasets[1].label = i18n.t('tx_pps');
+    }
+
+    if (state.charts.connections) {
+        state.charts.connections.data.datasets[0].label = i18n.t('tcp');
+        state.charts.connections.data.datasets[1].label = i18n.t('udp');
+        state.charts.connections.data.datasets[2].label = i18n.t('time_wait');
+        state.charts.connections.data.datasets[3].label = i18n.t('established');
+        state.charts.connections.data.datasets[4].label = i18n.t('inerrs');
+        state.charts.connections.data.datasets[5].label = i18n.t('outrsts');
+    }
+
+    if (state.charts.diskio) {
+        state.charts.diskio.data.datasets[0].label = i18n.t('read_bs');
+        state.charts.diskio.data.datasets[1].label = i18n.t('write_bs');
+        state.charts.diskio.data.datasets[2].label = i18n.t('reads_s');
+        state.charts.diskio.data.datasets[3].label = i18n.t('writes_s');
+    }
+
+    if (state.charts.disktemp && state.diskTempSensorNames.length === 0) {
+        state.charts.disktemp.data.datasets[0].label = i18n.t('temperature');
+    }
+
+    if (state.charts.processes) {
+        state.charts.processes.data.datasets[0].label = i18n.t('running');
+        state.charts.processes.data.datasets[1].label = i18n.t('sleeping');
+        state.charts.processes.data.datasets[2].label = i18n.t('blocked');
+        state.charts.processes.data.datasets[3].label = i18n.t('zombie');
+        state.charts.processes.data.datasets[4].label = i18n.t('total');
+    }
+
+    if (state.charts.entropy) {
+        state.charts.entropy.data.datasets[0].label = i18n.t('entropy');
+    }
+
+    if (state.charts.gpuload) {
+        state.charts.gpuload.data.datasets[0].label = i18n.t('load_pct');
+        state.charts.gpuload.data.datasets[1].label = i18n.t('power_w');
+    }
+
+    if (state.charts.vram) {
+        state.charts.vram.data.datasets[0].label = i18n.t('used');
+    }
+
+    if (state.charts.gputemp) {
+        state.charts.gputemp.data.datasets[0].label = i18n.t('temperature');
+    }
+
+    if (state.charts.self) {
+        state.charts.self.data.datasets[0].label = i18n.t('cpu_pct');
+        state.charts.self.data.datasets[1].label = i18n.t('rss');
+    }
 }

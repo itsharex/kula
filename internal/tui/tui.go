@@ -5,6 +5,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"kula/internal/collector"
+	"kula/internal/i18n"
 )
 
 const (
@@ -63,8 +64,8 @@ const (
 	numTabs
 )
 
-var tabNames = [numTabs]string{
-	"Overview", "CPU", "Memory", "Network", "Disk", "Processes", "GPU",
+var tabKeys = [numTabs]string{
+	"server_monitoring", "cpu", "ram", "network_throughput", "disk_io", "processes", "gpu_load",
 }
 
 type tickMsg time.Time
@@ -93,6 +94,7 @@ type model struct {
 	histDisk    metricRing
 	histLoad    metricRing
 	histRunning metricRing
+	t           *i18n.Translator
 }
 
 // RunHeadless launches the full-screen BubbleTea TUI.
@@ -113,6 +115,7 @@ func RunHeadless(
 		showSystemInfo: showSystemInfo,
 		sample:         sample,
 		now:            time.Now(),
+		t:              i18n.NewTranslator(""), // Auto-detect system lang
 		histCPU:        newRing(),
 		histMem:        newRing(),
 		histSwap:       newRing(),

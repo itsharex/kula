@@ -38,12 +38,12 @@ function applyLayout() {
         dashboard.classList.add('layout-list');
         btn.classList.add('layout-active');
         btn.textContent = '⊟';
-        btn.title = 'Switch to grid layout';
+        btn.title = i18n.t('switch_grid');
     } else {
         dashboard.classList.remove('layout-list');
         btn.classList.remove('layout-active');
         btn.textContent = '⊞';
-        btn.title = 'Switch to list layout';
+        btn.title = i18n.t('switch_list');
     }
 
     // Re-init charts for new layout
@@ -68,11 +68,11 @@ function setTimeRange(seconds) {
     document.getElementById('btn-custom-range')?.classList.remove('active');
 
     const labels = {
-        60: 'Last 1 minute', 300: 'Last 5 minutes', 900: 'Last 15 minutes', 1800: 'Last 30 minutes',
-        3600: 'Last 1 hour', 10800: 'Last 3 hours', 21600: 'Last 6 hours', 43200: 'Last 12 hours',
-        86400: 'Last 24 hours', 259200: 'Last 3 days', 604800: 'Last 7 days', 2592000: 'Last 30 days'
+        60: i18n.t('last_1_m'), 300: i18n.t('last_5_m'), 900: i18n.t('last_15_m'), 1800: i18n.t('last_30_m'),
+        3600: i18n.t('last_1_h'), 10800: i18n.t('last_3_h'), 21600: i18n.t('last_6_h'), 43200: i18n.t('last_12_h'),
+        86400: i18n.t('last_24_h'), 259200: i18n.t('last_3_d'), 604800: i18n.t('last_7_d'), 2592000: i18n.t('last_30_d')
     };
-    document.getElementById('time-range-display').textContent = labels[seconds] || `Last ${seconds}s`;
+    document.getElementById('time-range-display').textContent = labels[seconds] || `${i18n.t('last')} ${seconds}s`;
 
     resetZoomAll();
     fetchHistory(seconds);

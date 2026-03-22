@@ -55,16 +55,16 @@ func (m model) renderHeader() string {
 		if hostname == "" {
 			hostname = "—"
 		}
-		left += pipe + sHeaderKey.Render("host ") + sHeaderVal.Render(hostname)
+		left += pipe + sHeaderKey.Render(m.t.T("username")+" ") + sHeaderVal.Render(hostname)
 		if m.width >= 80 {
-			left += pipe + sHeaderKey.Render("kernel ") + sHeaderVal.Render(m.kernelVersion)
+			left += pipe + sHeaderKey.Render(m.t.T("kernel")+" ") + sHeaderVal.Render(m.kernelVersion)
 		}
 		if m.width >= 100 {
-			left += pipe + sHeaderKey.Render("arch ") + sHeaderVal.Render(m.cpuArch)
+			left += pipe + sHeaderKey.Render(m.t.T("architecture")+" ") + sHeaderVal.Render(m.cpuArch)
 		}
 	}
 	if m.sample != nil && m.sample.System.UptimeHuman != "" && m.width >= 70 {
-		left += pipe + sHeaderKey.Render("up ") + sHeaderVal.Render(m.sample.System.UptimeHuman)
+		left += pipe + sHeaderKey.Render(m.t.T("uptime")+" ") + sHeaderVal.Render(m.sample.System.UptimeHuman)
 	}
 
 	right := " " + sHeaderTime.Render(m.now.Format("15:04:05")) + " "
@@ -81,7 +81,7 @@ func (m model) renderTabBar() string {
 	var tabs string
 	for i := tabID(0); i < numTabs; i++ {
 		num := fmt.Sprintf("%d", i+1)
-		name := tabNames[i]
+		name := m.t.T(tabKeys[i])
 		if i == m.activeTab {
 			tabs += sTabNumAct.Render(num) + sTabAct.Render(name)
 		} else {
@@ -99,7 +99,7 @@ func (m model) renderTabBar() string {
 
 func (m model) renderFooter() string {
 	type hint struct{ key, desc string }
-	hints := []hint{{"Tab/→", "next"}, {"←", "prev"}, {"1-7", "jump"}, {"q", "quit"}}
+	hints := []hint{{"Tab/→", m.t.T("next")}, {"←", m.t.T("prev")}, {"1-7", m.t.T("jump")}, {"q", m.t.T("logout")}}
 	sep := sFooterSep.Render("  ")
 	var parts []string
 	for _, h := range hints {
@@ -154,7 +154,7 @@ func barW(inner int) int {
 
 func (m model) viewOverview(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 
 	if w >= narrowWidth {
@@ -175,23 +175,23 @@ func (m model) buildOverviewLeft(colW int) string {
 
 	var builder strings.Builder
 	
-	builder.WriteString(sPanelTitleAlt.Render("◈ Resources"))
+	builder.WriteString(sPanelTitleAlt.Render("◈ "+m.t.T("system_metrics")))
 	builder.WriteString("\n")
 	builder.WriteString(sDivider.Render(strings.Repeat("─", inner)))
 	builder.WriteString("\n\n")
-	builder.WriteString(renderMetricBarFull("CPU   ", s.CPU.Total.Usage, bw, ""))
+	builder.WriteString(renderMetricBarFull(padRight(m.t.T("cpu"), 6), s.CPU.Total.Usage, bw, ""))
 	builder.WriteString("\n")
-	builder.WriteString(renderMetricBarFull("Memory", s.Memory.UsedPercent, bw,
+	builder.WriteString(renderMetricBarFull(padRight(m.t.T("ram"), 6), s.Memory.UsedPercent, bw,
 		fmtBytes(s.Memory.Used)+" / "+fmtBytes(s.Memory.Total)))
 	builder.WriteString("\n")
-	builder.WriteString(renderMetricBarFull("Swap  ", s.Swap.UsedPercent, bw,
+	builder.WriteString(renderMetricBarFull(padRight(m.t.T("swap"), 6), s.Swap.UsedPercent, bw,
 		fmtBytes(s.Swap.Used)+" / "+fmtBytes(s.Swap.Total)))
 	builder.WriteString("\n\n")
-	builder.WriteString(sPanelTitle.Render("Load Average"))
+	builder.WriteString(sPanelTitle.Render(m.t.T("load_average")))
 	builder.WriteString("\n")
-	builder.WriteString(renderLoadRow(s.LoadAvg.Load1, s.LoadAvg.Load5, s.LoadAvg.Load15))
+	builder.WriteString(m.renderLoadRow(s.LoadAvg.Load1, s.LoadAvg.Load5, s.LoadAvg.Load15))
 	builder.WriteString("\n\n")
-	builder.WriteString(renderLabelVal("Processes", fmt.Sprintf("%d total  %d running  %d zombie",
+	builder.WriteString(renderLabelVal(m.t.T("processes"), fmt.Sprintf("%d total  %d running  %d zombie",
 		s.Process.Total, s.Process.Running, s.Process.Zombie)))
 	
 	if len(s.GPU) > 0 {
@@ -212,33 +212,33 @@ func (m model) buildOverviewRight(colW int) string {
 	inner := colW - 6
 	var builder strings.Builder
 	
-	builder.WriteString(sPanelTitleAlt.Render("◈ System"))
+	builder.WriteString(sPanelTitleAlt.Render("◈ "+m.t.T("system_info")))
 	builder.WriteString("\n")
 	builder.WriteString(sDivider.Render(strings.Repeat("─", inner)))
 	builder.WriteString("\n\n")
 	
 	if m.showSystemInfo {
-		builder.WriteString(renderLabelVal("Hostname", s.System.Hostname))
+		builder.WriteString(renderLabelVal(padRight(m.t.T("username"), 10), s.System.Hostname))
 		builder.WriteString("\n")
-		builder.WriteString(renderLabelVal("OS      ", m.osName))
+		builder.WriteString(renderLabelVal(padRight(m.t.T("os"), 10), m.osName))
 		builder.WriteString("\n")
-		builder.WriteString(renderLabelVal("Kernel  ", m.kernelVersion))
+		builder.WriteString(renderLabelVal(padRight(m.t.T("kernel"), 10), m.kernelVersion))
 		builder.WriteString("\n")
-		builder.WriteString(renderLabelVal("Arch    ", m.cpuArch))
+		builder.WriteString(renderLabelVal(padRight(m.t.T("architecture"), 10), m.cpuArch))
 		builder.WriteString("\n\n")
 	}
 	
-	builder.WriteString(renderLabelVal("Uptime  ", s.System.UptimeHuman))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("uptime"), 10), s.System.UptimeHuman))
 	builder.WriteString("\n")
-	builder.WriteString(renderLabelVal("Clock   ", clockStr(s.System.ClockSync, s.System.ClockSource)))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("clock"), 10), clockStr(s.System.ClockSync, s.System.ClockSource)))
 	builder.WriteString("\n")
-	builder.WriteString(renderLabelVal("Entropy ", fmt.Sprintf("%d bits", s.System.Entropy)))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("entropy"), 10), fmt.Sprintf("%d bits", s.System.Entropy)))
 	builder.WriteString("\n")
-	builder.WriteString(renderLabelVal("Users   ", fmt.Sprintf("%d", s.System.UserCount)))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("user"), 10), fmt.Sprintf("%d", s.System.UserCount)))
 	
 	if len(s.Network.Interfaces) > 0 {
 		builder.WriteString("\n\n")
-		builder.WriteString(sPanelTitle.Render("Network"))
+		builder.WriteString(sPanelTitle.Render(m.t.T("network_throughput")))
 		builder.WriteString("\n\n")
 		for _, iface := range s.Network.Interfaces {
 			builder.WriteString(sLabel.Render(padRight(iface.Name, 10))+" "+
@@ -255,7 +255,7 @@ func (m model) buildOverviewRight(colW int) string {
 
 func (m model) viewCPU(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 	s := m.sample.CPU
 	la := m.sample.LoadAvg
@@ -270,21 +270,21 @@ func (m model) viewCPU(w, h int) string {
 	builder.WriteString("\n")
 	builder.WriteString(sDivider.Render(strings.Repeat("─", inner)))
 	builder.WriteString("\n\n")
-	builder.WriteString(renderMetricBarFull("Total", s.Total.Usage, bw, fmt.Sprintf("%d cores", s.NumCores)))
+	builder.WriteString(renderMetricBarFull(m.t.T("total"), s.Total.Usage, bw, fmt.Sprintf("%d cores", s.NumCores)))
 	builder.WriteString("\n\n")
-	builder.WriteString(sPanelTitle.Render("Breakdown"))
+	builder.WriteString(sPanelTitle.Render(m.t.T("breakdown")))
 	builder.WriteString("\n\n")
 	builder.WriteString(renderCPUBreakdown(s.Total))
 	builder.WriteString("\n\n")
-	builder.WriteString(sPanelTitle.Render("Load Average"))
+	builder.WriteString(sPanelTitle.Render(m.t.T("load_average")))
 	builder.WriteString("\n\n")
-	builder.WriteString(renderLoadRow(la.Load1, la.Load5, la.Load15))
+	builder.WriteString(m.renderLoadRow(la.Load1, la.Load5, la.Load15))
 	builder.WriteString("\n\n")
-	builder.WriteString(renderLabelVal("Threads", fmt.Sprintf("%d running / %d total", la.Running, la.Total)))
+	builder.WriteString(renderLabelVal(m.t.T("threads"), fmt.Sprintf("%d running / %d total", la.Running, la.Total)))
 
 	if !compact && s.Temperature > 0 {
 		builder.WriteString("\n\n")
-		builder.WriteString(sPanelTitle.Render("Temperature"))
+		builder.WriteString(sPanelTitle.Render(m.t.T("temperature")))
 		builder.WriteString("\n\n")
 		builder.WriteString(renderLabelVal("Package", fmt.Sprintf("%.1f °C", s.Temperature)))
 		builder.WriteString("\n")
@@ -317,14 +317,14 @@ func renderCPUBreakdown(c collector.CPUCoreStats) string {
 // ── Memory tab ────────────────────────────────────────────────────────────────
 
 // buildMemorySection renders the RAM breakdown section with all memory metrics.
-func (m model) buildMemorySection(mem collector.MemoryStats, inner, bw int) string {
+func (m model) buildMemorySection(mem collector.MemoryStats) string {
 	var builder strings.Builder
 	
-	builder.WriteString(renderLabelVal("Used     ", fmtBytes(mem.Used)))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("used"), 10), fmtBytes(mem.Used)))
 	builder.WriteString("\n")
-	builder.WriteString(renderLabelVal("Free     ", fmtBytes(mem.Free)))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("free"), 10), fmtBytes(mem.Free)))
 	builder.WriteString("\n")
-	builder.WriteString(renderLabelVal("Available", fmtBytes(mem.Available)))
+	builder.WriteString(renderLabelVal(padRight(m.t.T("available"), 10), fmtBytes(mem.Available)))
 	builder.WriteString("\n")
 	builder.WriteString(renderLabelVal("Buffers  ", fmtBytes(mem.Buffers)))
 	builder.WriteString("\n")
@@ -336,11 +336,11 @@ func (m model) buildMemorySection(mem collector.MemoryStats, inner, bw int) stri
 }
 
 // buildSwapSection renders the swap information section.
-func (m model) buildSwapSection(swap collector.SwapStats, inner, bw int) string {
+func (m model) buildSwapSection(swap collector.SwapStats, bw int) string {
 	var builder strings.Builder
 	
 	if swap.Total == 0 {
-		builder.WriteString(sMuted.Render("  No swap configured"))
+		builder.WriteString(sMuted.Render("  " + m.t.T("no_swap")))
 	} else {
 		builder.WriteString(renderMetricBarFull("Swap", swap.UsedPercent, bw,
 			fmtBytes(swap.Used)+" / "+fmtBytes(swap.Total)))
@@ -355,7 +355,7 @@ func (m model) buildSwapSection(swap collector.SwapStats, inner, bw int) string 
 
 func (m model) viewMemory(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 	_ = h
 	mem := m.sample.Memory
@@ -374,11 +374,11 @@ func (m model) viewMemory(w, h int) string {
 	builder.WriteString("\n\n")
 	builder.WriteString(sPanelTitle.Render("RAM Breakdown"))
 	builder.WriteString("\n\n")
-	builder.WriteString(m.buildMemorySection(mem, inner, bw))
+	builder.WriteString(m.buildMemorySection(mem))
 	builder.WriteString("\n\n")
 	builder.WriteString(sPanelTitle.Render("Swap"))
 	builder.WriteString("\n\n")
-	builder.WriteString(m.buildSwapSection(swap, inner, bw))
+	builder.WriteString(m.buildSwapSection(swap, bw))
 	
 	return sPanel.Width(inner).Render(builder.String())
 }
@@ -448,7 +448,7 @@ func (m model) buildTCPSocketsSection(tcp collector.TCPStats, sock collector.Soc
 
 func (m model) viewNetwork(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 	_ = h
 	net := m.sample.Network
@@ -473,7 +473,7 @@ func (m model) viewNetwork(w, h int) string {
 
 func (m model) viewDisk(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 	_ = h
 	disks := m.sample.Disks
@@ -519,7 +519,7 @@ func (m model) viewDisk(w, h int) string {
 	}
 
 	bw := barW(clamp(inner-36, 0, maxBarWidth))
-	lines = append(lines, "", sPanelTitle.Render("Filesystems"), "")
+	lines = append(lines, "", sPanelTitle.Render(m.t.T("disk_space")), "")
 	for _, fs := range disks.FileSystems {
 		lines = append(lines,
 			renderMetricBarFull(padRight(fs.MountPoint, 16), fs.UsedPct, bw,
@@ -533,7 +533,7 @@ func (m model) viewDisk(w, h int) string {
 
 func (m model) viewProcesses(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 	_ = h
 	p := m.sample.Process
@@ -573,10 +573,10 @@ func (m model) viewProcesses(w, h int) string {
 
 	self := m.sample.Self
 	lines = append(lines,
-		"", sPanelTitle.Render("Kula Agent"), "",
-		renderLabelVal("CPU       ", fmt.Sprintf("%.2f%%", self.CPUPercent)),
-		renderLabelVal("RSS Memory", fmtBytes(self.MemRSS)),
-		renderLabelVal("Open FDs  ", fmt.Sprintf("%d", self.FDs)),
+		"", sPanelTitle.Render(m.t.T("self_monitoring")), "",
+		renderLabelVal(padRight(m.t.T("cpu_pct"), 11), fmt.Sprintf("%.2f%%", self.CPUPercent)),
+		renderLabelVal(padRight(m.t.T("rss"), 11), fmtBytes(self.MemRSS)),
+		renderLabelVal(padRight("Open FDs", 11), fmt.Sprintf("%d", self.FDs)),
 	)
 	return sPanel.Width(inner).Render(strings.Join(lines, "\n"))
 }
@@ -617,10 +617,10 @@ func renderLabelVal(label, val string) string {
 	return sLabel.Render(label+":  ") + sValue.Render(val)
 }
 
-func renderLoadRow(l1, l5, l15 float64) string {
-	return sLabel.Render("  1m: ") + loadStyle(l1).Render(fmt.Sprintf("%.2f", l1)) +
-		sLabel.Render("   5m: ") + loadStyle(l5).Render(fmt.Sprintf("%.2f", l5)) +
-		sLabel.Render("   15m: ") + loadStyle(l15).Render(fmt.Sprintf("%.2f", l15))
+func (m model) renderLoadRow(l1, l5, l15 float64) string {
+	return sLabel.Render("  "+m.t.T("1_min")+": ") + loadStyle(l1).Render(fmt.Sprintf("%.2f", l1)) +
+		sLabel.Render("   "+m.t.T("5_min")+": ") + loadStyle(l5).Render(fmt.Sprintf("%.2f", l5)) +
+		sLabel.Render("   "+m.t.T("15_min")+": ") + loadStyle(l15).Render(fmt.Sprintf("%.2f", l15))
 }
 
 func clockStr(synced bool, source string) string {
@@ -715,14 +715,14 @@ func clampLines(s string, n int) string {
 
 func (m model) viewGPU(w, h int) string {
 	if m.sample == nil {
-		return centerText("Collecting data…", w, h)
+		return m.centerText("Collecting data…", w, h)
 	}
 	gpus := m.sample.GPU
 	inner := w - 6
 	bw := barW(inner)
 
 	if len(gpus) == 0 {
-		return centerText("No GPUs detected", w, h)
+		return m.centerText("no_gpus", w, h)
 	}
 
 	var builder strings.Builder
@@ -772,6 +772,6 @@ func (m model) viewGPU(w, h int) string {
 	return sPanel.Width(inner).Render(builder.String())
 }
 
-func centerText(msg string, w, h int) string {
-	return lipgloss.Place(w, h, lipgloss.Center, lipgloss.Center, sMuted.Render(msg))
+func (m model) centerText(msg string, w, h int) string {
+	return lipgloss.Place(w, h, lipgloss.Center, lipgloss.Center, sMuted.Render(m.t.T(msg)))
 }

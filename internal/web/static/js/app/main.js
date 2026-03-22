@@ -5,7 +5,10 @@
    ============================================================ */
 'use strict';
 
-function init() {
+async function init() {
+    // Initialize i18n before everything else
+    await i18n.init();
+
     // Apply stored layout
     applyLayout();
 
@@ -34,7 +37,7 @@ function init() {
         state.aggDropdownOpen = list.classList.contains('open');
     });
     document.getElementById('btn-focus').addEventListener('click', toggleFocusMode);
-    document.getElementById('login-form').addEventListener('submit', handleLogin);
+    document.getElementById('login-form')?.addEventListener('submit', handleLogin);
     document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
     document.getElementById('btn-custom-range').addEventListener('click', toggleCustomTimePicker);
     document.getElementById('btn-apply-custom').addEventListener('click', applyCustomRange);
@@ -118,7 +121,7 @@ function init() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => init());
 } else {
     init();
 }

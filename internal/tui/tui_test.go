@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"kula/internal/collector"
+	"kula/internal/i18n"
 )
 
 // ── Test helpers ──────────────────────────────────────────────────────────────
@@ -109,6 +110,7 @@ func newTestModel(w, h int) model {
 		histDisk:       newRing(),
 		histLoad:       newRing(),
 		histRunning:    newRing(),
+		t:              i18n.NewTranslator("en"),
 	}
 }
 
@@ -563,7 +565,7 @@ func TestView_NilSampleShowsLoading(t *testing.T) {
 	m.sample = nil
 	// Must not panic; loading message should appear.
 	view := m.View()
-	if !strings.Contains(view, "Collecting") {
+	if !strings.Contains(view, m.t.T("collecting_data")) {
 		t.Errorf("nil sample should show loading message, got view of len %d", len(view))
 	}
 }
@@ -573,12 +575,12 @@ func TestView_WideLayoutUsedAboveThreshold(t *testing.T) {
 	m := newTestModel(narrowWidth+10, 40)
 	m.activeTab = tabOverview
 	view := m.View()
-	// In wide mode both "◈ Resources" and "◈ System" panels appear side by side.
-	if !strings.Contains(view, "Resources") {
-		t.Errorf("wide layout missing Resources panel")
+	// In wide mode both translated panels appear.
+	if !strings.Contains(view, m.t.T("system_metrics")) {
+		t.Errorf("wide layout missing Resources panel (translated)")
 	}
-	if !strings.Contains(view, "System") {
-		t.Errorf("wide layout missing System panel")
+	if !strings.Contains(view, m.t.T("system_info")) {
+		t.Errorf("wide layout missing System panel (translated)")
 	}
 }
 
@@ -614,7 +616,7 @@ func TestView_HeaderContainsTime(t *testing.T) {
 func TestView_FooterContainsHints(t *testing.T) {
 	m := newTestModel(120, 40)
 	view := m.View()
-	for _, hint := range []string{"quit", "next", "prev", "jump"} {
+	for _, hint := range []string{m.t.T("logout"), m.t.T("next"), m.t.T("prev"), m.t.T("jump")} {
 		if !strings.Contains(view, hint) {
 			t.Errorf("footer missing hint %q", hint)
 		}
@@ -658,7 +660,7 @@ func TestView_DiskTabContent(t *testing.T) {
 	m := newTestModel(120, 40)
 	m.activeTab = tabDisk
 	view := m.View()
-	for _, want := range []string{"sda", "Filesystems", "/"} {
+	for _, want := range []string{"sda", m.t.T("disk_space"), "/"} {
 		if !strings.Contains(view, want) {
 			t.Errorf("Disk tab missing %q", want)
 		}
@@ -669,7 +671,7 @@ func TestView_ProcessesTabContent(t *testing.T) {
 	m := newTestModel(120, 40)
 	m.activeTab = tabProcesses
 	view := m.View()
-	for _, want := range []string{"Processes", "Running", "Sleeping", "Kula"} {
+	for _, want := range []string{m.t.T("processes"), m.t.T("running"), m.t.T("sleeping"), m.t.T("self_monitoring")} {
 		if !strings.Contains(view, want) {
 			t.Errorf("Processes tab missing %q", want)
 		}
