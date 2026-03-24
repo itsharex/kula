@@ -13,6 +13,8 @@ Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security
 
 - Per-device/interface graph splitting
 - New config option: mounts_detection - control how mount points are detected. (#5)
+- New env var: KULA_MOUNTS_DETECTION for mounts_detection override (#5)
+- New env var: KULA_DIRECTORY for directory override
 
 ### Changed
 

@@ -234,6 +234,12 @@ func Load(path string) (*Config, error) {
 			cfg.Web.Logging.Enabled = false
 		}
 	}
+	if md := os.Getenv("KULA_MOUNTS_DETECTION"); md != "" {
+		cfg.Collection.MountsDetection = md
+	}
+	if dir := os.Getenv("KULA_DIRECTORY"); dir != "" {
+		cfg.Storage.Directory = dir
+	}
 
 	// Expand ~/ shorthand to the user's home directory
 	if len(cfg.Storage.Directory) > 1 && cfg.Storage.Directory[:2] == "~/" {

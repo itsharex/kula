@@ -2,9 +2,11 @@
 # https://github.com/c0m4r/kula
 
 # Note: some settings can be overridden by environment variables
+# - KULA_DIRECTORY overrides storage.directory
 # - KULA_LOGLEVEL overrides logging.level
 # - KULA_LISTEN overrides web.listen
 # - KULA_PORT overrides web.port
+# - KULA_MOUNTS_DETECTION overrides collection.mounts_detection
 
 # Global settings
 global:
